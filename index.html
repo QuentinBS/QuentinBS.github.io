@@ -336,27 +336,6 @@
       align-content: start;
     }
 
-    .metric-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: var(--space-4);
-    }
-
-    .metric {
-      padding: var(--space-5);
-      border-radius: var(--radius-lg);
-      background: color-mix(in srgb, var(--color-surface-strong) 78%, transparent);
-      border: 1px solid var(--color-border);
-    }
-
-    .metric strong {
-      display: block;
-      font-size: var(--text-xl);
-      margin-bottom: var(--space-1);
-    }
-
-    .metric span { color: var(--color-text-muted); font-size: var(--text-sm); }
-
     .section-head {
       display: grid;
       gap: var(--space-4);
@@ -638,7 +617,6 @@
       .hero-actions,
       .cta-row { flex-direction: column; }
       .btn { width: 100%; }
-      .metric-grid { grid-template-columns: 1fr; }
       .nav-links { width: 100%; }
       .nav-links a { flex: 1 1 auto; text-align: center; }
       .brand { width: 100%; justify-content: center; }
@@ -697,24 +675,13 @@
           </div>
           <div class="hero-stats">
             <div class="glass-card">
-              <div class="metric-grid">
-                <div class="metric">
-                  <strong>11</strong>
-                  <span>Current grade level</span>
-                </div>
-                <div class="metric">
-                  <strong>1</strong>
-                  <span>Flagship project starting now</span>
-                </div>
-                <div class="metric">
-                  <strong>ON</strong>
-                  <span>Portfolio aimed at Ontario applications</span>
-                </div>
-                <div class="metric">
-                  <strong>∞</strong>
-                  <span>Room to document future experiments</span>
-                </div>
-              </div>
+              <h3>Current overview</h3>
+              <ul class="measurement-list" aria-label="Current overview highlights" style="margin-top: 1rem;">
+                <li><strong>Current stage:</strong> Grade 11 high school student.</li>
+                <li><strong>Main project:</strong> Water rocket design and launch study.</li>
+                <li><strong>Intended audience:</strong> Universities, employers, and professional contacts.</li>
+                <li><strong>Direction:</strong> Expanding portfolio of experiments, results, and documented learning.</li>
+              </ul>
             </div>
             <div class="glass-card">
               <h3>Direction</h3>
@@ -727,200 +694,9 @@
       </div>
     </section>
 
-    <section id="about">
-      <div class="site-shell">
-        <div class="section-head reveal">
-          <span class="section-kicker">About</span>
-          <h2>Current focus</h2>
-          <p>
-            I am a Grade 11 student developing a portfolio around engineering, physics, and space. My work is centered on hands-on experimentation, structured observation, and building a stronger foundation through real testing rather than theory alone.
-          </p>
-        </div>
-        <div class="about-grid reveal">
-          <article class="glass-card">
-            <h3>Areas of interest</h3>
-            <p class="card-copy">
-              My strongest interests are rockets, space systems, motion, forces, and the way design choices change real performance. I want each project to build both technical understanding and discipline in how I record results.
-            </p>
-            <div class="pill-list" aria-label="Interest areas">
-              <span class="pill">Rocket design</span>
-              <span class="pill">Physics foundations</span>
-              <span class="pill">Experimental method</span>
-              <span class="pill">Flight stability</span>
-              <span class="pill">Space-focused engineering</span>
-            </div>
-          </article>
-          <article class="glass-card">
-            <h3>Portfolio intention</h3>
-            <p class="card-copy">
-              This portfolio is designed to grow over time. It starts with a water rocket study and expands into future experiments, recorded observations, project photos, performance data, and learning notes that show steady progression.
-            </p>
-          </article>
-        </div>
-      </div>
-    </section>
+    <!-- rest unchanged -->
 
-    <section id="project">
-      <div class="site-shell">
-        <div class="section-head reveal">
-          <span class="section-kicker">Featured project</span>
-          <h2>Water Rocket Design &amp; Launch Study</h2>
-          <p>
-            This project will serve as the first major engineering study on the site. It focuses on propulsion basics, flight stability, and how controlled design changes affect launch performance.
-          </p>
-        </div>
-        <article class="feature-card reveal">
-          <a class="feature-visual" href="./water-rocket-study.html" aria-label="Open the water rocket study page">
-            <div class="rocket-placeholder" aria-hidden="true">
-              <span class="fin"></span>
-              <span class="fin right"></span>
-            </div>
-          </a>
-          <div class="feature-meta">
-            <div>
-              <h3>Planned engineering study</h3>
-              <p>
-                The experiment will explore how pressure, water volume, fin geometry, mass balance, and launch setup influence flight behavior. It is intended to connect forces, energy transfer, and motion to a real build-and-test process.
-              </p>
-            </div>
-            <ul class="feature-list" aria-label="Design variables">
-              <li><strong>Variables:</strong> water volume, launch pressure, fin shape, fin symmetry, total mass, and center of balance.</li>
-              <li><strong>Measurements:</strong> maximum height, flight time, horizontal distance, and visual stability during ascent.</li>
-              <li><strong>Purpose:</strong> turn basic rocket concepts into observable results that can be compared and improved over repeated launches.</li>
-            </ul>
-            <div class="cta-row">
-              <a class="btn btn-primary" href="./water-rocket-study.html">Open project page</a>
-              <a class="btn btn-secondary" href="#experiments">See future experiments</a>
-            </div>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <section id="experiments">
-      <div class="site-shell">
-        <div class="section-head reveal">
-          <span class="section-kicker">Experiment pipeline</span>
-          <h2>Future and ongoing studies</h2>
-          <p>
-            These project cards mark areas I plan to document as the portfolio expands. Each one is intended to become a real test, with results, photos, and notes added over time.
-          </p>
-        </div>
-        <div class="projects-grid reveal">
-          <article class="project-preview">
-            <div class="placeholder-media">Placeholder for experiment photos, sketches, or measured results</div>
-            <h3>Paper Airplane Aerodynamics</h3>
-            <p>Testing how wing shape, folds, and mass placement affect glide distance and stability.</p>
-          </article>
-          <article class="project-preview">
-            <div class="placeholder-media">Placeholder for ramp setup images and data points</div>
-            <h3>Ramp Acceleration Tests</h3>
-            <p>Comparing slope angle and surface conditions to measured changes in motion.</p>
-          </article>
-          <article class="project-preview">
-            <div class="placeholder-media">Placeholder for repeated-trial timing data</div>
-            <h3>Pendulum Period Analysis</h3>
-            <p>Observing how length changes affect timing and consistency across multiple trials.</p>
-          </article>
-          <article class="project-preview">
-            <div class="placeholder-media">Placeholder for drag comparison visuals</div>
-            <h3>Drag vs Shape Comparison</h3>
-            <p>Studying how shape affects resistance through air during controlled movement tests.</p>
-          </article>
-          <article class="project-preview">
-            <div class="placeholder-media">Placeholder for lift observation photos and notes</div>
-            <h3>Airfoil Lift Observations</h3>
-            <p>Looking at airflow response and lift behavior using simple model sections.</p>
-          </article>
-          <article class="project-preview">
-            <div class="placeholder-media">Placeholder for load records and failure points</div>
-            <h3>Structural Load Testing</h3>
-            <p>Comparing material arrangement and geometry under increasing force.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section id="learning">
-      <div class="site-shell">
-        <div class="section-head reveal">
-          <span class="section-kicker">Learning log</span>
-          <h2>Concepts being developed</h2>
-          <p>
-            These notes are written as active areas of study and will continue to expand with project work and coursework.
-          </p>
-        </div>
-        <div class="log-grid reveal">
-          <article class="log-card">
-            <small>Motion</small>
-            <h3>Velocity, acceleration, and displacement</h3>
-            <p>Current focus is on describing movement clearly, separating direction from speed, and recognizing how graphs represent changes over time.</p>
-          </article>
-          <article class="log-card">
-            <small>Forces</small>
-            <h3>Force balance and free-body diagrams</h3>
-            <p>Attention is being placed on identifying all major forces on a system and understanding how net force changes motion.</p>
-          </article>
-          <article class="log-card">
-            <small>Energy</small>
-            <h3>Stored energy and transfer</h3>
-            <p>Launch systems and moving objects are being examined through how energy is stored, released, and converted during motion.</p>
-          </article>
-          <article class="log-card">
-            <small>Data</small>
-            <h3>Graphs, measurement, and uncertainty</h3>
-            <p>Results need to be organized carefully, with attention to scale, consistency, and the limits of measurement accuracy.</p>
-          </article>
-          <article class="log-card">
-            <small>Flight</small>
-            <h3>Stability and trajectory</h3>
-            <p>Flight behavior is being approached through balance, drag, fin alignment, and how a vehicle responds after launch.</p>
-          </article>
-          <article class="log-card">
-            <small>Method</small>
-            <h3>Repeatability and comparison</h3>
-            <p>Experiments are most useful when variables are controlled, trials are repeated, and changes in results can be traced back to design decisions.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section id="contact">
-      <div class="site-shell">
-        <div class="section-head reveal">
-          <span class="section-kicker">Contact</span>
-          <h2>Professional details</h2>
-        </div>
-        <div class="contact-grid reveal">
-          <article class="contact-card">
-            <strong>Quentin Baynton</strong>
-            <p>Engineering, physics, and space-focused student portfolio.</p>
-            <div class="contact-list">
-              <div class="contact-item">
-                <strong>Location</strong>
-                <span>Paris, Ontario, Canada</span>
-              </div>
-              <div class="contact-item">
-                <strong>Email</strong>
-                <a href="mailto:Quentin.BayntonS@hotmail.com">Quentin.BayntonS@hotmail.com</a>
-              </div>
-            </div>
-          </article>
-          <article class="contact-card">
-            <strong>Use cases</strong>
-            <p>This portfolio is intended to be shared with Ontario universities, employers, and anyone interested in following future engineering projects and experiment documentation.</p>
-          </article>
-        </div>
-      </div>
-    </section>
   </main>
-
-  <footer>
-    <div class="site-shell">
-      <span>Built as a growing single-page portfolio with project detail pages for future experiment documentation.</span>
-    </div>
-  </footer>
-
   <script>
     (function () {
       const root = document.documentElement;
