@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Water Rocket Study | Quentin Baynton</title>
+  <meta name="description" content="Water Rocket Design and Launch Study for Quentin Baynton's aerospace portfolio." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #07111d;
+      --surface: rgba(13, 22, 36, 0.9);
+      --surface-2: rgba(17, 29, 46, 0.96);
+      --line: rgba(145, 200, 248, 0.14);
+      --text: #edf6ff;
+      --muted: #aebfd2;
+      --accent: #76d4ff;
+      --accent-soft: rgba(118, 212, 255, 0.1);
+      --shadow: 0 28px 80px rgba(0, 0, 0, 0.38);
+      --radius-lg: 1.3rem;
+      --radius-xl: 1.9rem;
+      --content: 1080px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 14% 12%, rgba(118,212,255,0.16), transparent 22%),
+        radial-gradient(circle at 86% 10%, rgba(114,162,255,0.12), transparent 18%),
+        linear-gradient(180deg, var(--bg), #040914 78%);
+    }
+    a { color: inherit; text-decoration: none; }
+    .shell { width: min(var(--content), calc(100% - 2rem)); margin: 0 auto; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      backdrop-filter: blur(18px);
+      background: rgba(7, 17, 29, 0.82);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .topbar-inner {
+      min-height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: .75rem 0;
+    }
+    .brand { display: inline-flex; align-items: center; gap: .75rem; font-weight: 700; }
+    .nav-link {
+      min-height: 44px;
+      padding: .72rem 1rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--surface-2);
+      color: var(--text);
+      box-shadow: 0 10px 26px rgba(0,0,0,.24);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    main { padding: 2rem 0 4rem; }
+    .hero, .panel {
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--line);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .hero {
+      padding: clamp(1.5rem, 4vw, 3rem);
+      display: grid;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .eyebrow {
+      display: inline-flex;
+      padding: .5rem .9rem;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: #aee9ff;
+      text-transform: uppercase;
+      font-size: .82rem;
+      font-weight: 800;
+      letter-spacing: .05em;
+    }
+    h1, h2, h3 { margin: 0; line-height: 1.06; }
+    h1 { font-size: clamp(2.2rem, 5vw, 4.25rem); letter-spacing: -.05em; max-width: 12ch; }
+    h2 { font-size: clamp(1.5rem, 2vw, 2rem); margin-bottom: 1rem; }
+    p, li { color: var(--muted); line-height: 1.7; }
+    .grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 1.5rem; }
+    .panel { padding: 1.5rem; }
+    .list, .data-grid { display: grid; gap: .85rem; }
+    .list-item, .data-card {
+      padding: 1rem;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      background: var(--surface-2);
+    }
+    .data-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .cta-row { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1rem; }
+    .button {
+      min-height: 46px;
+      padding: .9rem 1.15rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--surface-2);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .button.primary {
+      background: linear-gradient(135deg, var(--accent), #d8f4ff);
+      color: #04131d;
+      border-color: transparent;
+      font-weight: 800;
+    }
+    @media (max-width: 860px) {
+      .grid, .data-grid { grid-template-columns: 1fr; }
+      .topbar-inner { flex-wrap: wrap; }
+      .nav-link { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="brand" href="./index.html">Quentin Baynton</a>
+      <a class="nav-link" href="./blog.html">Open project log</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="shell">
+      <section class="hero">
+        <span class="eyebrow">Featured engineering study</span>
+        <h1>Water Rocket Design &amp; Launch Study</h1>
+        <p>This project is structured as a developing experiment focused on propulsion, flight stability, and how design changes affect performance. It is intended to connect classroom physics to measurable launch results through repeated testing and clearer documentation.</p>
+        <div class="cta-row">
+          <a class="button primary" href="./blog.html">View project log</a>
+          <a class="button" href="./starting-the-water-rocket-project.html">Read first article</a>
+        </div>
+      </section>
+
+      <div class="grid">
+        <section class="panel">
+          <h2>Study purpose</h2>
+          <p>The project is intended to examine how design and launch conditions affect a simple rocket system in flight. It should create a clear record of changes, observations, and measurable outcomes.</p>
+          <div class="list">
+            <div class="list-item"><strong>Physics connection:</strong> connect forces, pressure, motion, and energy transfer to a visible launch system.</div>
+            <div class="list-item"><strong>Design comparison:</strong> compare how build variables influence height, stability, and distance.</div>
+            <div class="list-item"><strong>Documentation habit:</strong> develop stronger project records through repeated trials and structured notes.</div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Tracked variables</h2>
+          <div class="list">
+            <div class="list-item">Water volume inside the rocket.</div>
+            <div class="list-item">Air pressure used for launch.</div>
+            <div class="list-item">Fin design, including shape, angle, and symmetry.</div>
+            <div class="list-item">Rocket mass and overall balance.</div>
+          </div>
+        </section>
+      </div>
+
+      <section class="panel" style="margin-top:1.5rem;">
+        <h2>Measured outcomes</h2>
+        <div class="data-grid">
+          <div class="data-card"><strong>Maximum height</strong><p>Used to compare overall launch effectiveness between configurations.</p></div>
+          <div class="data-card"><strong>Total flight time</strong><p>Useful for understanding ascent, descent, and overall flight behaviour.</p></div>
+          <div class="data-card"><strong>Horizontal distance</strong><p>Helps show angle drift, imbalance, and aerodynamic inconsistency.</p></div>
+          <div class="data-card"><strong>Flight stability</strong><p>Qualitative observations can show wobble, spin, and directional control issues.</p></div>
+        </div>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

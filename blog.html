@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Log | Quentin Baynton</title>
+  <meta name="description" content="Project log and experiment updates from Quentin Baynton's aerospace portfolio." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --bg: #07111f;
+      --bg-2: #0c1728;
+      --panel: rgba(11, 23, 39, 0.72);
+      --panel-strong: rgba(13, 27, 45, 0.92);
+      --text: #e7eef8;
+      --muted: #9fb0c7;
+      --line: rgba(148, 186, 255, 0.16);
+      --accent: #8ed8ff;
+      --accent-2: #59bfff;
+      --success: #84f3bf;
+      --danger: #ff9fb4;
+      --radius: 20px;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top, rgba(75, 159, 255, 0.16), transparent 28%),
+        radial-gradient(circle at 20% 30%, rgba(112, 221, 255, 0.08), transparent 18%),
+        linear-gradient(180deg, #040b14 0%, #08111d 40%, #07101a 100%);
+      min-height: 100vh;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,.6), transparent 60%),
+        radial-gradient(1.5px 1.5px at 70% 20%, rgba(255,255,255,.5), transparent 60%),
+        radial-gradient(1.5px 1.5px at 40% 70%, rgba(255,255,255,.35), transparent 60%),
+        radial-gradient(1px 1px at 80% 80%, rgba(255,255,255,.4), transparent 60%);
+      opacity: .35;
+    }
+    a { color: inherit; text-decoration: none; }
+    .container { width: min(1120px, calc(100% - 32px)); margin: 0 auto; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(18px);
+      background: rgba(5, 11, 20, 0.72);
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      min-height: 72px;
+      gap: 18px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(145deg, rgba(142,216,255,.22), rgba(89,191,255,.08));
+      border: 1px solid rgba(142,216,255,.22);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+    }
+    .brand-mark svg { width: 24px; height: 24px; }
+    .nav { display: flex; gap: 10px; flex-wrap: wrap; }
+    .nav a, .button {
+      min-height: 44px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 600;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.02);
+    }
+    .nav a:hover, .button:hover { border-color: rgba(142,216,255,.35); }
+    .hero { padding: 72px 0 32px; }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.25fr .9fr;
+      gap: 24px;
+      align-items: stretch;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow);
+    }
+    .hero-copy { padding: 34px; }
+    .eyebrow {
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: .18em;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-size: clamp(2.4rem, 4vw, 4.8rem);
+      line-height: 1;
+      margin: 0 0 16px;
+      letter-spacing: -0.05em;
+    }
+    .hero-copy p { color: var(--muted); font-size: 1.05rem; max-width: 58ch; }
+    .hero-actions { margin-top: 28px; display: flex; gap: 12px; flex-wrap: wrap; }
+    .button.primary {
+      background: linear-gradient(180deg, rgba(142,216,255,.22), rgba(89,191,255,.12));
+      border-color: rgba(142,216,255,.4);
+    }
+    .stats { padding: 24px; display: grid; gap: 14px; }
+    .stat-card {
+      padding: 18px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+    }
+    .stat-card strong { display: block; font-size: 1.75rem; margin-bottom: 6px; }
+    .main-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 24px;
+      padding: 24px 0 72px;
+    }
+    .feed { display: grid; gap: 18px; }
+    .post-card {
+      padding: 22px;
+      border-radius: 24px;
+      background: var(--panel-strong);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+    .post-meta {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(142,216,255,.08);
+      border: 1px solid rgba(142,216,255,.16);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    .post-card h2 {
+      margin: 0 0 12px;
+      font-size: clamp(1.35rem, 2vw, 1.85rem);
+      line-height: 1.08;
+    }
+    .post-card p { color: var(--muted); margin: 0; }
+    .body-copy { margin-top: 14px; white-space: pre-wrap; }
+    .sidebar { display: grid; gap: 18px; align-content: start; }
+    .side-panel { padding: 20px; }
+    .side-panel h3 { margin: 0 0 10px; font-size: 1rem; }
+    .side-panel p, .side-panel li { color: var(--muted); font-size: .95rem; }
+    .empty, .loading, .error {
+      padding: 28px;
+      border-radius: 24px;
+      border: 1px dashed var(--line);
+      color: var(--muted);
+      background: rgba(255,255,255,.02);
+    }
+    .error { color: var(--danger); }
+    .hidden { display: none !important; }
+    .footer { padding: 0 0 40px; color: var(--muted); }
+    .footer p { font-size: .9rem; }
+    @media (max-width: 900px) {
+      .hero-grid, .main-grid { grid-template-columns: 1fr; }
+      .topbar-inner { padding: 10px 0; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a class="brand" href="./index.html">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-label="QB mark">
+            <path d="M5 15.5 12 3l7 12.5" />
+            <path d="M8.2 13h7.6" />
+            <path d="M12 3v17" />
+          </svg>
+        </span>
+        <span>Quentin Baynton</span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a href="./index.html">Home</a>
+        <a href="./water-rocket-study.html">Water Rocket</a>
+        <a href="#feed">Project Log</a>
+        <a href="./admin.html">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <article class="panel hero-copy">
+          <div class="eyebrow">Aerospace Progress Log</div>
+          <h1>Experiment updates, build notes, and launch progression.</h1>
+          <p>This page loads live updates from a private posting system so the project log can grow without manually writing a new HTML file every time.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#feed">View latest posts</a>
+            <a class="button" href="./admin.html">Open admin</a>
+          </div>
+        </article>
+        <aside class="panel stats" aria-label="Overview">
+          <div class="stat-card">
+            <span class="pill">Live feed</span>
+            <strong id="stat-count">0</strong>
+            <span>Total published updates.</span>
+          </div>
+          <div class="stat-card">
+            <span class="pill">Posting mode</span>
+            <strong>Private</strong>
+            <span>Only the admin account can publish.</span>
+          </div>
+          <div class="stat-card">
+            <span class="pill">Use case</span>
+            <strong>Admissions-ready</strong>
+            <span>Good for documenting rocket tests, physics notes, and progress.</span>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="container main-grid" id="feed">
+      <div class="feed-wrap">
+        <div id="loading" class="loading">Loading posts...</div>
+        <div id="error" class="error hidden"></div>
+        <div id="empty" class="empty hidden">No posts yet. Your first update will appear here after you publish from the admin page.</div>
+        <div class="feed" id="posts"></div>
+      </div>
+
+      <aside class="sidebar">
+        <section class="panel side-panel">
+          <h3>How this works</h3>
+          <p>The public page reads published entries from Supabase. You do not need to edit this file each time you want to add an update.</p>
+        </section>
+        <section class="panel side-panel">
+          <h3>Suggested post types</h3>
+          <ul>
+            <li>Launch preparation notes</li>
+            <li>Fin geometry changes</li>
+            <li>Pressure and water fill tests</li>
+            <li>Photos and measured results</li>
+          </ul>
+        </section>
+        <section class="panel side-panel">
+          <h3>Static article</h3>
+          <p>The first planning article is still available as a separate page.</p>
+          <a class="button" href="./starting-the-water-rocket-project.html">Open article</a>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <footer class="container footer">
+    <p>Quentin Baynton · Aerospace portfolio log</p>
+  </footer>
+
+  <script>
+    const SUPABASE_URL = 'https://glkykzftspozxhbpaiot.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdsa3lremZ0c3BvenhoYnBhaW90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwMTU4MzksImV4cCI6MjA5MTU5MTgzOX0.QasIJThA8kiiZv0sgd9i15xxxJbFoZVMU2PERT4MI74';
+
+    const postsEl = document.getElementById('posts');
+    const loadingEl = document.getElementById('loading');
+    const emptyEl = document.getElementById('empty');
+    const errorEl = document.getElementById('error');
+    const statCount = document.getElementById('stat-count');
+
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: 'short', day: 'numeric' }).format(date);
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      }[char]));
+    }
+
+    function renderPosts(posts) {
+      postsEl.innerHTML = '';
+      statCount.textContent = posts.length;
+      if (!posts.length) {
+        emptyEl.hidden = false;
+        return;
+      }
+      emptyEl.hidden = true;
+      posts.forEach((post) => {
+        const article = document.createElement('article');
+        article.className = 'post-card';
+        article.innerHTML = `
+          <div class="post-meta">
+            <span class="pill">${escapeHtml(post.category || 'Update')}</span>
+            <span>${escapeHtml(formatDate(post.created_at || post.createdat))}</span>
+            ${post.status ? `<span>Status: ${escapeHtml(post.status)}</span>` : ''}
+          </div>
+          <h2>${escapeHtml(post.title)}</h2>
+          ${post.summary ? `<p>${escapeHtml(post.summary)}</p>` : ''}
+          <p class="body-copy">${escapeHtml(post.body)}</p>
+        `;
+        postsEl.appendChild(article);
+      });
+    }
+
+    async function loadPosts() {
+      if (SUPABASE_URL.includes('PASTE_YOUR') || SUPABASE_ANON_KEY.includes('PASTE_YOUR')) {
+        loadingEl.hidden = true;
+        errorEl.hidden = false;
+        errorEl.textContent = 'Add your Supabase URL and anon key inside blog.html before using the live feed.';
+        return;
+      }
+      try {
+        const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const { data, error } = await client
+          .from('posts')
+          .select('id,title,summary,body,category,status,created_at,createdat')
+          .eq('published', true)
+          .order('created_at', { ascending: false, nullsFirst: false })
+          .order('createdat', { ascending: false, nullsFirst: false });
+        if (error) throw error;
+        renderPosts(data || []);
+      } catch (err) {
+        errorEl.hidden = false;
+        errorEl.textContent = `Could not load posts: ${err.message}`;
+      } finally {
+        loadingEl.hidden = true;
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', loadPosts);
+  </script>
+</body>
+</html>
