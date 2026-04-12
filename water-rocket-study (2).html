@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Water Rocket Study | Quentin Baynton</title>
+  <meta name="description" content="Project detail page for Quentin Baynton's water rocket design and launch study." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --text-sm: clamp(0.9rem, 0.84rem + 0.22vw, 1rem);
+      --text-base: clamp(1rem, 0.95rem + 0.2vw, 1.08rem);
+      --text-lg: clamp(1.15rem, 1rem + 0.55vw, 1.4rem);
+      --text-xl: clamp(1.55rem, 1.18rem + 1.2vw, 2.2rem);
+      --text-2xl: clamp(2rem, 1.35rem + 2vw, 3rem);
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-5: 1.25rem;
+      --space-6: 1.5rem;
+      --space-8: 2rem;
+      --space-10: 2.5rem;
+      --space-12: 3rem;
+      --space-16: 4rem;
+      --radius-lg: 1.3rem;
+      --radius-xl: 1.85rem;
+      --radius-full: 999px;
+      --font-body: 'Inter', system-ui, sans-serif;
+      --color-bg: #07111d;
+      --color-surface: rgba(13, 22, 36, 0.88);
+      --color-surface-strong: rgba(17, 28, 45, 0.96);
+      --color-border: rgba(145, 200, 248, 0.14);
+      --color-text: #edf6ff;
+      --color-text-muted: #aebfd2;
+      --color-primary: #76d4ff;
+      --color-primary-strong: #aee9ff;
+      --color-primary-soft: rgba(118,212,255,0.1);
+      --shadow-sm: 0 12px 28px rgba(0, 0, 0, 0.22);
+      --shadow-lg: 0 34px 84px rgba(0, 0, 0, 0.38);
+      --content: 1140px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      background:
+        radial-gradient(circle at 20% 14%, rgba(118,212,255,0.16), transparent 28%),
+        radial-gradient(circle at 82% 8%, rgba(102, 160, 255, 0.12), transparent 20%),
+        linear-gradient(180deg, var(--color-bg), #040914 72%);
+      color: var(--color-text);
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    .shell { width: min(var(--content), calc(100% - 2rem)); margin: 0 auto; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      backdrop-filter: blur(18px);
+      background: rgba(7, 17, 29, 0.82);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .topbar-inner {
+      min-height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+      padding: var(--space-3) 0;
+    }
+
+    .nav-link, .chip, .btn {
+      min-height: 44px;
+      padding: 0.72rem 1rem;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface-strong);
+      color: var(--color-text);
+      box-shadow: var(--shadow-sm);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--color-primary), color-mix(in srgb, var(--color-primary) 76%, white 24%));
+      color: #04131d;
+      border-color: transparent;
+      font-weight: 800;
+    }
+
+    main { padding: var(--space-8) 0 var(--space-16); }
+
+    .hero, .panel, .media-placeholder, .table-wrap, .gallery-card {
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .hero {
+      padding: clamp(var(--space-6), 4vw, var(--space-10));
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+      gap: var(--space-6);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 280px;
+      aspect-ratio: 1;
+      right: -6%;
+      bottom: -28%;
+      background: radial-gradient(circle, rgba(118,212,255,0.16), transparent 68%);
+      filter: blur(8px);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      margin-bottom: var(--space-4);
+      padding: 0.46rem 0.86rem;
+      border-radius: var(--radius-full);
+      background: var(--color-primary-soft);
+      color: var(--color-primary-strong);
+      font-size: var(--text-sm);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 { margin: 0; line-height: 1.08; }
+    h1 { font-size: var(--text-2xl); letter-spacing: -0.045em; text-wrap: balance; }
+    h2 { font-size: var(--text-xl); letter-spacing: -0.03em; text-wrap: balance; }
+    h3 { font-size: var(--text-lg); }
+    p, li, td { color: var(--color-text-muted); }
+
+    .hero-cta, .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+      margin-top: var(--space-5);
+    }
+
+    .media-placeholder {
+      min-height: 350px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: var(--space-6);
+      background:
+        linear-gradient(180deg, rgba(118,212,255,0.08), transparent),
+        rgba(18, 31, 49, 0.96);
+    }
+
+    .rocket {
+      width: min(220px, 66%);
+      aspect-ratio: 0.72;
+      border-radius: 999px 999px 42px 42px;
+      background: linear-gradient(180deg, rgba(239,247,255,0.98), rgba(154,201,232,0.82));
+      position: relative;
+      transform: rotate(18deg);
+      box-shadow: 0 24px 60px rgba(118,212,255,0.18);
+    }
+
+    .rocket::before {
+      content: "";
+      position: absolute;
+      inset: 12% 37% auto 37%;
+      height: 16%;
+      border-radius: 999px;
+      background: rgba(9,28,48,0.72);
+    }
+
+    .rocket::after {
+      content: "";
+      position: absolute;
+      inset: auto 19% -10% 19%;
+      height: 26%;
+      background: linear-gradient(180deg, rgba(118,212,255,0.72), transparent 76%);
+      filter: blur(16px);
+      border-radius: 50%;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-6);
+      margin-top: var(--space-8);
+    }
+
+    .panel, .gallery-card, .table-wrap { padding: var(--space-6); }
+    .list { margin: 0; padding-left: 1.1rem; }
+    .list li + li { margin-top: var(--space-3); }
+
+    .table-wrap { overflow-x: auto; margin-top: var(--space-10); }
+    table { width: 100%; border-collapse: collapse; min-width: 760px; }
+    th, td { padding: 0.92rem 0.8rem; border-bottom: 1px solid var(--color-border); text-align: left; vertical-align: top; }
+    th { color: var(--color-text); font-size: var(--text-sm); }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-4);
+      margin-top: var(--space-5);
+    }
+
+    .gallery-slot {
+      min-height: 160px;
+      border-radius: var(--radius-lg);
+      border: 1px dashed rgba(118,212,255,0.26);
+      background: rgba(18, 31, 49, 0.96);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: var(--color-text-muted);
+      padding: var(--space-4);
+    }
+
+    .section { margin-top: var(--space-10); }
+
+    @media (max-width: 980px) {
+      .hero, .grid, .gallery-grid { grid-template-columns: 1fr; }
+      .media-placeholder { min-height: 280px; }
+    }
+
+    @media (max-width: 640px) {
+      .shell { width: min(100% - 1rem, var(--content)); }
+      .topbar-inner { min-height: 68px; flex-wrap: wrap; }
+      .hero { padding: var(--space-5); }
+      .hero-cta { flex-direction: column; }
+      .btn, .nav-link { width: 100%; text-align: center; }
+      .media-placeholder { min-height: 220px; }
+      .rocket { width: min(180px, 62%); }
+      .panel, .gallery-card, .table-wrap { padding: var(--space-5); }
+      table { min-width: 680px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="nav-link" href="./index.html">← Back to portfolio</a>
+      <a class="nav-link" href="./blog.html">Blog</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="shell">
+      <section class="hero">
+        <div>
+          <div class="eyebrow">Project detail page</div>
+          <h1>Water Rocket Design &amp; Launch Study</h1>
+          <p>
+            This page is set up as the dedicated project record for launch trials, design updates, photos, and measured performance data. It begins as a structured placeholder so future test results can be added without redesigning the portfolio.
+          </p>
+          <div class="chips" aria-label="Project topics">
+            <span class="chip">Pressure</span>
+            <span class="chip">Water volume</span>
+            <span class="chip">Fin geometry</span>
+            <span class="chip">Stability</span>
+            <span class="chip">Trajectory</span>
+          </div>
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="#data">Go to data layout</a>
+            <a class="btn" href="./blog.html">Read blog updates</a>
+          </div>
+        </div>
+
+        <div class="media-placeholder">
+          <div>
+            <div class="rocket" aria-hidden="true"></div>
+            <p style="margin-top: 1.4rem; max-width: 28ch;">Replace this placeholder with launch photos, setup images, frame captures, or diagrams.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section grid">
+        <article class="panel">
+          <h2>Study purpose</h2>
+          <p>The project is intended to examine how design and launch conditions affect a simple rocket system in flight. It should create a clear record of changes, observations, and measurable outcomes.</p>
+          <ul class="list">
+            <li>Connect classroom physics to a visible and repeatable launch system.</li>
+            <li>Compare how variables influence height, stability, and distance.</li>
+            <li>Develop stronger project documentation habits through repeated testing.</li>
+          </ul>
+        </article>
+
+        <article class="panel">
+          <h2>Planned evidence</h2>
+          <p>This page is ready to hold multiple forms of documentation as the project grows.</p>
+          <ul class="list">
+            <li>Photos of the rocket body, fin setup, and launch stand.</li>
+            <li>Videos or still frames from each launch trial.</li>
+            <li>Tables of conditions and results for each run.</li>
+            <li>Short notes on what changed and what was observed.</li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="section">
+        <article class="gallery-card">
+          <h2>Planned photo gallery</h2>
+          <p>This area gives the project page a strong visual section on laptop while still stacking cleanly on phone.</p>
+          <div class="gallery-grid">
+            <div class="gallery-slot">Full rocket build photo</div>
+            <div class="gallery-slot">Fin arrangement close-up</div>
+            <div class="gallery-slot">Launch setup image</div>
+          </div>
+        </article>
+      </section>
+
+      <section class="table-wrap" id="data">
+        <h2 style="margin-bottom: 1rem;">Planned data structure</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Trial</th>
+              <th>Water volume</th>
+              <th>Launch pressure</th>
+              <th>Fin configuration</th>
+              <th>Mass / balance notes</th>
+              <th>Max height</th>
+              <th>Flight time</th>
+              <th>Distance</th>
+              <th>Stability notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>01</td>
+              <td>To be added</td>
+              <td>To be added</td>
+              <td>To be added</td>
+              <td>To be added</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td>Awaiting first launch</td>
+            </tr>
+            <tr>
+              <td>02</td>
+              <td>To be added</td>
+              <td>To be added</td>
+              <td>To be added</td>
+              <td>To be added</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td>Awaiting first launch</td>
+            </tr>
+            <tr>
+              <td>03</td>
+              <td>To be added</td>
+              <td>To be added</td>
+              <td>To be added</td>
+              <td>To be added</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td>Awaiting first launch</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+  </main>
+</body>
+</html>
