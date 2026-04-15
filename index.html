@@ -951,7 +951,7 @@
          */
         const SUPABASE_URL = 'https://oeffdzvomoxuxlleoizd.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lZmZkenZvbW94dXhsbGVvaXpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyMDI5NTIsImV4cCI6MjA5MTc3ODk1Mn0.gK37r_PikM1eElOo0YH2SezgyOPJQ22UFah_-6KgmQk';
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         /**
          * 2. INTERACTIVE CANVAS STARFIELD (Aerospace Vibe)
@@ -1086,7 +1086,7 @@
          * Pulls your projects from the database and renders them as 3D cards.
          */
         async function loadProjects() {
-            const { data: projects, error } = await supabase
+            const { data: projects, error } = await db
                 .from('projects')
                 .select('*')
                 .order('created_at', { ascending: false });
