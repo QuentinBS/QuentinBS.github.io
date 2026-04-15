@@ -3,62 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <title>Admin Dashboard</title>
-    <!-- Quill Rich Text Editor CSS -->
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-    <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
-        input { width: 100%; padding: 0.5rem; margin-bottom: 1rem; font-size: 1.2rem; }
-        #editor { height: 300px; margin-bottom: 1rem; }
-        button { background: #2b6cb0; color: white; border: none; padding: 0.8rem 1.5rem; cursor: pointer; border-radius: 5px; }
+        body { font-family: sans-serif; max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+        .form-group { margin-bottom: 1rem; }
+        label { font-weight: bold; display: block; margin-bottom: 0.5rem; }
+        input[type="text"], select, textarea { width: 100%; padding: 0.5rem; font-size: 1rem; box-sizing: border-box; }
+        #editor { height: 400px; margin-bottom: 1rem; background: white; }
+        button { background: #2b6cb0; color: white; border: none; padding: 0.8rem 1.5rem; cursor: pointer; border-radius: 5px; font-weight: bold; }
+        .list-section { margin-top: 3rem; border-top: 2px solid #e2e8f0; padding-top: 2rem; }
+        .list-item { display: flex; justify-content: space-between; background: #f7fafc; padding: 1rem; margin-bottom: 0.5rem; border: 1px solid #e2e8f0; border-radius: 5px; }
+        .edit-btn { background: #4a5568; padding: 0.4rem 0.8rem; }
     </style>
 </head>
 <body>
 
-    <h1>Write a New Blog Post</h1>
+    <h1>Website Manager</h1>
+    <h3 id="mode-title">Create New Content</h3>
     
-    <input type="text" id="post-title" placeholder="Enter post title...">
-    
-    <!-- This is the Rich Text Editor box -->
-    <div id="editor"></div>
-    
-    <button onclick="publishPost()">Publish Post</button>
-    <p id="status-message"></p>
+    <div class="form-group">
+        <label>Type of Content:</label>
+        <select id="content-type" onchange="toggleFields()">
+            <option value="blog">Blog Post</option>
+            <option value="project">Portfolio Project</option>
+        </select>
+    </div>
 
-    <!-- Quill Editor JS -->
+    <div class="form-group">
+        <label>Title:</label>
+        <input type="text" id="title" placeholder="Enter title...">
+    </div>
+
+    <!-- These fields only show if "Project" is selected -->
+    <div id="project-fields" style="display: none;">
+        <div class="form-group">
+            <label>Category:</label>
+            <select id="category">
+                <option value="aerospace">Aerospace</option>
+                <option value="coding">Coding</option>
+                <option value="math">Math & Physics</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Short Description (Shows on the main portfolio card):</label>
+            <textarea id="short-desc" rows="2" placeholder="Brief summary..."></textarea>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Full Content (Full details, images, data tables):</label>
+        <div id="editor"></div>
+    </div>
+    
+    <button id="save-btn" onclick="saveContent()">Publish New</button>
+    <button onclick="resetForm()" style="background: #e53e3e; margin-left: 10px;">Clear Form</button>
+    <p id="status-message" style="color: green; font-weight: bold;"></p>
+
+    <!-- Lists to edit existing content -->
+    <div class="list-section">
+        <h2>Edit Existing Content</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+            <div>
+                <h3>Blog Posts</h3>
+                <div id="blog-list">Loading...</div>
+            </div>
+            <div>
+                <h3>Projects</h3>
+                <div id="project-list">Loading...</div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <script>
-        // Initialize the Rich Text Editor
-        var quill = new Quill('#editor', { theme: 'snow' });
+        const quill = new Quill('#editor', { theme: 'snow' });
 
-        // REPLACE THESE WITH YOUR SUPABASE CREDENTIALS
         const SUPABASE_URL = 'https://oeffdzvomoxuxlleoizd.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lZmZkenZvbW94dXhsbGVvaXpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyMDI5NTIsImV4cCI6MjA5MTc3ODk1Mn0.gK37r_PikM1eElOo0YH2SezgyOPJQ22UFah_-6KgmQk';
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        async function publishPost() {
-            const title = document.getElementById('post-title').value;
-            const content = quill.root.innerHTML; // Gets the formatted text
+        let editingId = null;
 
-            if (!title) {
-                alert("Please add a title!");
-                return;
+        function toggleFields() {
+            const type = document.getElementById('content-type').value;
+            document.getElementById('project-fields').style.display = (type === 'project') ? 'block' : 'none';
+        }
+
+        async function saveContent() {
+            const type = document.getElementById('content-type').value;
+            const title = document.getElementById('title').value;
+            const content = quill.root.innerHTML;
+
+            if (!title) return alert("Please add a title!");
+
+            const payload = { title, content };
+            if (type === 'project') {
+                payload.category = document.getElementById('category').value;
+                payload.short_description = document.getElementById('short-desc').value;
             }
 
-            const { data, error } = await supabase
-                .from('posts')
-                .insert([{ title: title, content: content }]);
+            let error;
+            if (editingId) {
+                // Update existing
+                const { error: updateError } = await supabase.from(type === 'blog' ? 'posts' : 'projects')
+                    .update(payload).eq('id', editingId);
+                error = updateError;
+            } else {
+                // Insert new
+                const { error: insertError } = await supabase.from(type === 'blog' ? 'posts' : 'projects')
+                    .insert([payload]);
+                error = insertError;
+            }
 
             if (error) {
-                document.getElementById('status-message').innerText = "Error publishing post.";
-                console.error(error);
+                document.getElementById('status-message').innerText = "Error: " + error.message;
             } else {
-                document.getElementById('status-message').innerText = "Post published successfully!";
-                document.getElementById('post-title').value = '';
-                quill.root.innerHTML = ''; // Clear editor
+                document.getElementById('status-message').innerText = editingId ? "Updated successfully!" : "Published successfully!";
+                resetForm();
+                loadLists(); // Refresh lists below
             }
         }
+
+        function resetForm() {
+            editingId = null;
+            document.getElementById('title').value = '';
+            document.getElementById('short-desc').value = '';
+            quill.root.innerHTML = '';
+            document.getElementById('mode-title').innerText = "Create New Content";
+            document.getElementById('save-btn').innerText = "Publish New";
+        }
+
+        async function loadLists() {
+            const { data: posts } = await supabase.from('posts').select('*').order('created_at', { ascending: false });
+            const { data: projects } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
+
+            document.getElementById('blog-list').innerHTML = (posts || []).map(p => `
+                <div class="list-item">
+                    <span>${p.title}</span>
+                    <button class="edit-btn" onclick='editItem(${JSON.stringify(p)}, "blog")'>Edit</button>
+                </div>
+            `).join('');
+
+            document.getElementById('project-list').innerHTML = (projects || []).map(p => `
+                <div class="list-item">
+                    <span>${p.title}</span>
+                    <button class="edit-btn" onclick='editItem(${JSON.stringify(p).replace(/'/g, "&#39;")}, "project")'>Edit</button>
+                </div>
+            `).join('');
+        }
+
+        function editItem(item, type) {
+            editingId = item.id;
+            document.getElementById('content-type').value = type;
+            toggleFields();
+            
+            document.getElementById('title').value = item.title;
+            quill.root.innerHTML = item.content;
+            
+            if (type === 'project') {
+                document.getElementById('category').value = item.category;
+                document.getElementById('short-desc').value = item.short_description;
+            }
+
+            document.getElementById('mode-title').innerText = "Editing: " + item.title;
+            document.getElementById('save-btn').innerText = "Update Existing";
+            window.scrollTo(0, 0); // scroll to top
+        }
+
+        // Initialize
+        loadLists();
     </script>
 </body>
 </html>
