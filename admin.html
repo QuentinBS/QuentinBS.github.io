@@ -2,88 +2,87 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Dashboard</title>
+    <title>Mission Control Terminal | Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: sans-serif; max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
-        .form-group { margin-bottom: 1rem; }
-        label { font-weight: bold; display: block; margin-bottom: 0.5rem; }
-        input[type="text"], select, textarea { width: 100%; padding: 0.5rem; font-size: 1rem; box-sizing: border-box; }
-        #editor { height: 400px; margin-bottom: 1rem; background: white; }
-        button { background: #2b6cb0; color: white; border: none; padding: 0.8rem 1.5rem; cursor: pointer; border-radius: 5px; font-weight: bold; }
-        .list-section { margin-top: 3rem; border-top: 2px solid #e2e8f0; padding-top: 2rem; }
-        .list-item { display: flex; justify-content: space-between; background: #f7fafc; padding: 1rem; margin-bottom: 0.5rem; border: 1px solid #e2e8f0; border-radius: 5px; }
-        .edit-btn { background: #4a5568; padding: 0.4rem 0.8rem; }
+        :root {
+            --space-dark: #050810; --surface: rgba(16, 24, 46, 0.8);
+            --cyan-glow: #00f0ff; --orange-thruster: #ff4d00;
+            --text-main: #e2e8f0; --glass-border: 1px solid rgba(0, 240, 255, 0.2);
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--space-dark); color: var(--text-main); padding: 2rem; }
+        .terminal-container { max-width: 900px; margin: 0 auto; background: var(--surface); border: var(--glass-border); padding: 3rem; border-radius: 12px; box-shadow: 0 0 30px rgba(0, 240, 255, 0.1); }
+        h1 { font-family: 'Space Grotesk', sans-serif; color: #fff; text-transform: uppercase; text-align: center; margin-bottom: 2rem; letter-spacing: 2px; }
+        h1 span { color: var(--cyan-glow); }
+        
+        .form-group { margin-bottom: 1.5rem; }
+        label { font-family: var(--font-mono); color: var(--cyan-glow); display: block; margin-bottom: 0.5rem; font-size: 0.9rem; text-transform: uppercase; }
+        input, select, textarea { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 0.8rem; font-family: 'Inter', sans-serif; border-radius: 4px; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--cyan-glow); box-shadow: 0 0 10px rgba(0, 240, 255, 0.2); }
+        
+        /* Dark Mode Rich Text Editor */
+        #editor { background: rgba(0,0,0,0.5); color: #fff; height: 400px; border-color: rgba(255,255,255,0.1); font-family: 'Inter', sans-serif; font-size: 1.1rem; }
+        .ql-toolbar.ql-snow { background: rgba(255,255,255,0.9); border-radius: 4px 4px 0 0; }
+        
+        button { background: transparent; border: 1px solid var(--cyan-glow); color: var(--cyan-glow); padding: 1rem 2rem; font-family: var(--font-mono); font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; margin-top: 1rem; border-radius: 4px; text-transform: uppercase; }
+        button:hover { background: var(--cyan-glow); color: #000; box-shadow: 0 0 20px rgba(0, 240, 255, 0.4); }
+        
+        #status-message { text-align: center; font-family: var(--font-mono); margin-top: 1rem; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <h1>Website Manager</h1>
-    <h3 id="mode-title">Create New Content</h3>
-    
-    <div class="form-group">
-        <label>Type of Content:</label>
-        <select id="content-type" onchange="toggleFields()">
-            <option value="blog">Blog Post</option>
-            <option value="project">Portfolio Project</option>
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label>Title:</label>
-        <input type="text" id="title" placeholder="Enter title...">
-    </div>
-
-    <!-- These fields only show if "Project" is selected -->
-    <div id="project-fields" style="display: none;">
+    <div class="terminal-container">
+        <h1><span>SYS.ADMIN</span> // Upload Data</h1>
+        
         <div class="form-group">
-            <label>Category:</label>
-            <select id="category">
-                <option value="aerospace">Aerospace</option>
-                <option value="coding">Coding</option>
-                <option value="math">Math & Physics</option>
+            <label>> Select Target Database</label>
+            <select id="content-type" onchange="toggleFields()">
+                <option value="project">Project Portfolio</option>
+                <option value="blog">Comm Link (Blog Post)</option>
             </select>
         </div>
+
         <div class="form-group">
-            <label>Short Description (Shows on the main portfolio card):</label>
-            <textarea id="short-desc" rows="2" placeholder="Brief summary..."></textarea>
+            <label>> Transmission Title</label>
+            <input type="text" id="title" placeholder="Enter title...">
         </div>
-    </div>
 
-    <div class="form-group">
-        <label>Full Content (Full details, images, data tables):</label>
-        <div id="editor"></div>
-    </div>
-    
-    <button id="save-btn" onclick="saveContent()">Publish New</button>
-    <button onclick="resetForm()" style="background: #e53e3e; margin-left: 10px;">Clear Form</button>
-    <p id="status-message" style="color: green; font-weight: bold;"></p>
-
-    <!-- Lists to edit existing content -->
-    <div class="list-section">
-        <h2>Edit Existing Content</h2>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
-            <div>
-                <h3>Blog Posts</h3>
-                <div id="blog-list">Loading...</div>
+        <div id="project-fields">
+            <div class="form-group">
+                <label>> Project Designation (Category)</label>
+                <select id="category">
+                    <option value="aerospace">Aerospace</option>
+                    <option value="coding">Coding</option>
+                    <option value="math">Math & Physics</option>
+                </select>
             </div>
-            <div>
-                <h3>Projects</h3>
-                <div id="project-list">Loading...</div>
+            <div class="form-group">
+                <label>> HUD Summary (Short Description)</label>
+                <textarea id="short-desc" rows="2" placeholder="Brief summary for the main screen card..."></textarea>
             </div>
         </div>
+
+        <div class="form-group">
+            <label>> Core Data Payload (Full Content)</label>
+            <div id="editor"></div>
+        </div>
+        
+        <button onclick="saveContent()">Initialize Upload Sequence</button>
+        <p id="status-message"></p>
     </div>
 
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <script>
         const quill = new Quill('#editor', { theme: 'snow' });
 
+        // >>> PUT YOUR SUPABASE KEYS HERE <<<
         const SUPABASE_URL = 'https://oeffdzvomoxuxlleoizd.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lZmZkenZvbW94dXhsbGVvaXpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyMDI5NTIsImV4cCI6MjA5MTc3ODk1Mn0.gK37r_PikM1eElOo0YH2SezgyOPJQ22UFah_-6KgmQk';
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        let editingId = null;
 
         function toggleFields() {
             const type = document.getElementById('content-type').value;
@@ -94,8 +93,16 @@
             const type = document.getElementById('content-type').value;
             const title = document.getElementById('title').value;
             const content = quill.root.innerHTML;
+            const statusMsg = document.getElementById('status-message');
 
-            if (!title) return alert("Please add a title!");
+            if (!title) {
+                statusMsg.style.color = "red";
+                statusMsg.innerText = "ERR: TITLE REQUIRED";
+                return;
+            }
+
+            statusMsg.style.color = "var(--orange-thruster)";
+            statusMsg.innerText = "UPLOADING TO MAINFRAME...";
 
             const payload = { title, content };
             if (type === 'project') {
@@ -103,76 +110,21 @@
                 payload.short_description = document.getElementById('short-desc').value;
             }
 
-            let error;
-            if (editingId) {
-                // Update existing
-                const { error: updateError } = await supabase.from(type === 'blog' ? 'posts' : 'projects')
-                    .update(payload).eq('id', editingId);
-                error = updateError;
-            } else {
-                // Insert new
-                const { error: insertError } = await supabase.from(type === 'blog' ? 'posts' : 'projects')
-                    .insert([payload]);
-                error = insertError;
-            }
+            const { error } = await supabase.from(type === 'blog' ? 'posts' : 'projects').insert([payload]);
 
             if (error) {
-                document.getElementById('status-message').innerText = "Error: " + error.message;
+                statusMsg.style.color = "red";
+                statusMsg.innerText = "ERR: UPLOAD FAILED. " + error.message;
             } else {
-                document.getElementById('status-message').innerText = editingId ? "Updated successfully!" : "Published successfully!";
-                resetForm();
-                loadLists(); // Refresh lists below
+                statusMsg.style.color = "var(--cyan-glow)";
+                statusMsg.innerText = "TRANSMISSION SUCCESSFUL. DATA SAVED.";
+                
+                // Clear the form
+                document.getElementById('title').value = '';
+                document.getElementById('short-desc').value = '';
+                quill.root.innerHTML = '';
             }
         }
-
-        function resetForm() {
-            editingId = null;
-            document.getElementById('title').value = '';
-            document.getElementById('short-desc').value = '';
-            quill.root.innerHTML = '';
-            document.getElementById('mode-title').innerText = "Create New Content";
-            document.getElementById('save-btn').innerText = "Publish New";
-        }
-
-        async function loadLists() {
-            const { data: posts } = await supabase.from('posts').select('*').order('created_at', { ascending: false });
-            const { data: projects } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
-
-            document.getElementById('blog-list').innerHTML = (posts || []).map(p => `
-                <div class="list-item">
-                    <span>${p.title}</span>
-                    <button class="edit-btn" onclick='editItem(${JSON.stringify(p)}, "blog")'>Edit</button>
-                </div>
-            `).join('');
-
-            document.getElementById('project-list').innerHTML = (projects || []).map(p => `
-                <div class="list-item">
-                    <span>${p.title}</span>
-                    <button class="edit-btn" onclick='editItem(${JSON.stringify(p).replace(/'/g, "&#39;")}, "project")'>Edit</button>
-                </div>
-            `).join('');
-        }
-
-        function editItem(item, type) {
-            editingId = item.id;
-            document.getElementById('content-type').value = type;
-            toggleFields();
-            
-            document.getElementById('title').value = item.title;
-            quill.root.innerHTML = item.content;
-            
-            if (type === 'project') {
-                document.getElementById('category').value = item.category;
-                document.getElementById('short-desc').value = item.short_description;
-            }
-
-            document.getElementById('mode-title').innerText = "Editing: " + item.title;
-            document.getElementById('save-btn').innerText = "Update Existing";
-            window.scrollTo(0, 0); // scroll to top
-        }
-
-        // Initialize
-        loadLists();
     </script>
 </body>
 </html>
