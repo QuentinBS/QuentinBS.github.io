@@ -3,71 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Details | Quentin Baynton</title>
+    <title>Project Data Log | Mission Control</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@500;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <style>
-        :root { --bg-color: #ffffff; --text-color: #1a1a1a; --accent-color: #2b6cb0; --gray: #f7fafc; }
-        body { font-family: -apple-system, sans-serif; line-height: 1.6; color: var(--text-color); margin: 0; padding: 0; }
-        header { padding: 2rem; text-align: center; border-bottom: 1px solid #e2e8f0; }
-        nav { margin-top: 1rem; } nav a { margin: 0 1rem; text-decoration: none; color: var(--text-color); font-weight: 500; }
-        nav a:hover { color: var(--accent-color); }
-        .container { max-width: 800px; margin: 2rem auto; padding: 2rem; background: var(--gray); border-radius: 8px; border: 1px solid #e2e8f0; }
-        .tag { display: inline-block; font-size: 0.9rem; background: var(--accent-color); color: white; padding: 0.3rem 0.8rem; border-radius: 3px; margin-bottom: 1rem; text-transform: capitalize; }
-        img { max-width: 100%; height: auto; border-radius: 5px; } /* Ensures images format nicely */
-        .back-link { display: inline-block; margin-bottom: 2rem; color: var(--accent-color); text-decoration: none; font-weight: bold; }
+        /* Shared Mission Control Variables */
+        :root {
+            --space-dark: #050810; --space-light: #0a1122;
+            --surface: rgba(16, 24, 46, 0.7); --surface-hover: rgba(26, 38, 70, 0.9);
+            --cyan-glow: #00f0ff; --orange-thruster: #ff4d00;
+            --text-main: #e2e8f0; --text-muted: #8b9bb4;
+            --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+            --glass-blur: blur(12px);
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--font-body); background-color: var(--space-dark); color: var(--text-main); line-height: 1.8; overflow-x: hidden; }
+
+        /* Telemetry Scroll Progress Bar */
+        #telemetry-bar {
+            position: fixed; top: 0; left: 0; height: 3px; background: var(--cyan-glow);
+            width: 0%; z-index: 9999; box-shadow: 0 0 15px var(--cyan-glow); transition: width 0.1s;
+        }
+
+        /* Canvas Background */
+        #starfield { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
+
+        /* Glassmorphism Nav */
+        nav {
+            position: fixed; top: 0; width: 100%; background: rgba(5, 8, 16, 0.6);
+            backdrop-filter: var(--glass-blur); border-bottom: var(--glass-border); z-index: 1000; padding: 1.2rem 0;
+        }
+        .nav-container { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+        .logo { font-family: var(--font-display); font-size: 1.5rem; font-weight: 900; color: #ffffff; text-decoration: none; }
+        .logo span { color: var(--cyan-glow); }
+        .back-btn { font-family: var(--font-mono); color: var(--cyan-glow); text-decoration: none; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 0.5rem; transition: 0.3s; }
+        .back-btn:hover { text-shadow: 0 0 10px rgba(0, 240, 255, 0.5); transform: translateX(-5px); }
+
+        /* Data Log Container */
+        .container { max-width: 800px; margin: 120px auto 4rem; padding: 0 2rem; }
+        
+        .hud-header {
+            background: var(--surface); border: var(--glass-border); border-radius: 12px;
+            padding: 3rem; margin-bottom: 2rem; backdrop-filter: var(--glass-blur);
+            position: relative; overflow: hidden;
+        }
+
+        .hud-header::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--cyan-glow); box-shadow: 0 0 15px var(--cyan-glow);
+        }
+
+        .tag-container { display: flex; gap: 1rem; align-items: center; margin-bottom: 1.5rem; }
+        .tag { font-family: var(--font-mono); font-size: 0.8rem; background: rgba(255, 77, 0, 0.1); color: var(--orange-thruster); padding: 0.3rem 0.8rem; border-radius: 20px; border: 1px solid rgba(255, 77, 0, 0.3); text-transform: uppercase; }
+        .read-time { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted); }
+
+        h1 { font-family: var(--font-display); font-size: 3rem; color: #fff; line-height: 1.2; margin-bottom: 1rem; letter-spacing: -1px; }
+
+        /* Decryption Text Effect */
+        .decrypting { font-family: var(--font-mono); font-size: 1.2rem; color: var(--cyan-glow); text-align: center; padding: 4rem 0; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        /* Main Content Formatting */
+        .content-body { background: var(--surface); border: var(--glass-border); border-radius: 12px; padding: 3rem; backdrop-filter: var(--glass-blur); font-size: 1.1rem; }
+        .content-body h2, .content-body h3 { font-family: var(--font-display); color: #fff; margin: 2rem 0 1rem; }
+        .content-body p { margin-bottom: 1.5rem; }
+        .content-body img { max-width: 100%; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); margin: 2rem 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .content-body pre, .content-body code { background: #000; font-family: var(--font-mono); padding: 1rem; border-radius: 5px; color: var(--cyan-glow); overflow-x: auto; margin-bottom: 1.5rem; border: 1px solid rgba(0, 240, 255, 0.2); }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Quentin Baynton</h1>
-        <p>Future Aerospace Engineer</p>
-        <nav>
-            <a href="index.html">Portfolio</a>
-            <a href="blog.html">Blog</a>
-        </nav>
-    </header>
+    <div id="telemetry-bar"></div>
+    <canvas id="starfield"></canvas>
+
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo"><span>QB</span> Aerospace</a>
+            <a href="index.html#projects" class="back-btn">← Terminate Connection</a>
+        </div>
+    </nav>
 
     <div class="container" id="project-container">
-        <p>Loading project details...</p>
+        <div class="decrypting" id="loading-text">DECRYPTING DATA FILE...</div>
     </div>
 
     <script>
+        // --- SUPABASE CONFIG ---
         const SUPABASE_URL = 'https://oeffdzvomoxuxlleoizd.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lZmZkenZvbW94dXhsbGVvaXpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyMDI5NTIsImV4cCI6MjA5MTc3ODk1Mn0.gK37r_PikM1eElOo0YH2SezgyOPJQ22UFah_-6KgmQk';
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // This grabs the specific project ID from the web address (e.g., project.html?id=123)
+        // --- STARFIELD ENGINE ---
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+        let width, height, stars = [];
+        function resize() { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; }
+        class Star {
+            constructor() { this.x = Math.random() * width; this.y = Math.random() * height; this.z = Math.random() * width; this.size = Math.random() * 1.5; this.speed = (Math.random() * 0.5) + 0.1; }
+            update() { this.y -= this.speed; if (this.y < 0) { this.y = height; this.x = Math.random() * width; } }
+            draw() { ctx.fillStyle = `rgba(255, 255, 255, ${1 - this.z/width})`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
+        }
+        function initStars() { stars = []; for (let i = 0; i < 200; i++) stars.push(new Star()); }
+        function animateStars() { ctx.clearRect(0, 0, width, height); stars.forEach(star => { star.update(); star.draw(); }); requestAnimationFrame(animateStars); }
+        window.addEventListener('resize', () => { resize(); initStars(); }); resize(); initStars(); animateStars();
+
+        // --- TELEMETRY SCROLL TRACKER ---
+        window.addEventListener('scroll', () => {
+            const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const progress = (scrollTop / scrollHeight) * 100;
+            document.getElementById('telemetry-bar').style.width = progress + '%';
+        });
+
+        // --- DATA FETCH & DECRYPTION EFFECT ---
         const urlParams = new URLSearchParams(window.location.search);
         const projectId = urlParams.get('id');
 
+        // Hacker text scrambler for loading
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
+        let interval = setInterval(() => {
+            const loadingEl = document.getElementById('loading-text');
+            if(loadingEl) {
+                loadingEl.innerText = loadingEl.innerText.split("")
+                    .map((letter, index) => {
+                        if(index < 5 || letter === " ") return letter;
+                        return letters[Math.floor(Math.random() * letters.length)];
+                    }).join("");
+            }
+        }, 50);
+
         async function fetchProject() {
             if (!projectId) {
-                document.getElementById('project-container').innerHTML = '<p>Project not found.</p>';
-                return;
+                document.getElementById('project-container').innerHTML = '<div class="decrypting" style="color:red;">ERR: NO TARGET IDENTIFIED</div>';
+                clearInterval(interval); return;
             }
 
-            const { data: project, error } = await supabase
-                .from('projects')
-                .select('*')
-                .eq('id', projectId)
-                .single();
+            const { data: project, error } = await supabase.from('projects').select('*').eq('id', projectId).single();
+
+            clearInterval(interval); // Stop hacker text
 
             if (error || !project) {
-                document.getElementById('project-container').innerHTML = '<p>Error loading project.</p>';
+                document.getElementById('project-container').innerHTML = '<div class="decrypting" style="color:red;">ERR: DATA CORRUPTED OR MISSING</div>';
                 return;
             }
 
+            // Algorithmic Read Time (assumes ~200 words per minute)
+            const wordCount = project.content.replace(/<[^>]*>?/gm, '').split(/\s+/).length;
+            const readTime = Math.ceil(wordCount / 200);
+
+            // Date Formatting
+            const dateStr = new Date(project.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
             document.getElementById('project-container').innerHTML = `
-                <a href="index.html" class="back-link">← Back to Portfolio</a>
-                <br>
-                <span class="tag">${project.category}</span>
-                <h2>${project.title}</h2>
-                <div class="content">${project.content}</div>
+                <div class="hud-header">
+                    <div class="tag-container">
+                        <span class="tag">TARGET: ${project.category}</span>
+                        <span class="read-time">⏱️ ${readTime} MIN READ</span>
+                        <span class="read-time">📅 LOG DATE: ${dateStr}</span>
+                    </div>
+                    <h1>${project.title}</h1>
+                    <p style="color: var(--text-muted); font-size: 1.1rem;">${project.short_description}</p>
+                </div>
+                <div class="content-body">
+                    ${project.content}
+                </div>
             `;
         }
 
-        fetchProject();
+        // Add an artificial 1 second delay to let the user see the cool decryption effect
+        setTimeout(fetchProject, 1000); 
     </script>
 </body>
 </html>
