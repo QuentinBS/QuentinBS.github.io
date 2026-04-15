@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog | Quentin Baynton</title>
+    <!-- Same CSS styles as index.html -->
+    <style>
+        :root { --bg-color: #ffffff; --text-color: #1a1a1a; --accent-color: #2b6cb0; --gray: #f7fafc; }
+        body { font-family: -apple-system, sans-serif; line-height: 1.6; color: var(--text-color); margin: 0; }
+        header { padding: 2rem; text-align: center; border-bottom: 1px solid #e2e8f0; }
+        nav { margin-top: 1rem; } nav a { margin: 0 1rem; text-decoration: none; color: var(--text-color); font-weight: 500; }
+        nav a:hover { color: var(--accent-color); }
+        .container { max-width: 800px; margin: 0 auto; padding: 2rem; }
+        .post { background: var(--gray); border-radius: 8px; padding: 2rem; margin-bottom: 2rem; border: 1px solid #e2e8f0; }
+        .post-date { font-size: 0.9rem; color: #718096; }
+    </style>
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <header>
+        <h1>Quentin Baynton</h1>
+        <p>Future Aerospace Engineer</p>
+        <nav>
+            <a href="index.html">Portfolio</a>
+            <a href="blog.html">Blog</a>
+        </nav>
+    </header>
+
+    <div class="container" id="blog-container">
+        <p>Loading posts...</p>
+    </div>
+
+    <script>
+        // REPLACE THESE WITH YOUR SUPABASE CREDENTIALS
+        const SUPABASE_URL = 'https://oeffdzvomoxuxlleoizd.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lZmZkenZvbW94dXhsbGVvaXpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyMDI5NTIsImV4cCI6MjA5MTc3ODk1Mn0.gK37r_PikM1eElOo0YH2SezgyOPJQ22UFah_-6KgmQk';
+        
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function fetchPosts() {
+            const { data: posts, error } = await supabase
+                .from('posts')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            const container = document.getElementById('blog-container');
+            
+            if (error) {
+                container.innerHTML = '<p>Error loading posts.</p>';
+                return;
+            }
+            
+            if (posts.length === 0) {
+                container.innerHTML = '<p>No blog posts yet. Check back later!</p>';
+                return;
+            }
+
+            container.innerHTML = posts.map(post => `
+                <div class="post">
+                    <h2>${post.title}</h2>
+                    <p class="post-date">${new Date(post.created_at).toLocaleDateString()}</p>
+                    <div class="post-content">${post.content}</div>
+                </div>
+            `).join('');
+        }
+
+        fetchPosts();
+    </script>
+</body>
+</html>
