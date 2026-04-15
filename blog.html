@@ -80,10 +80,13 @@
         <h1 class="header-title" style="color: var(--cyan-glow); animation: pulse 1.5s infinite;">ESTABLISHING COMM LINK...</h1>
     </div>
 
-    <script>
+        <script>
         // --- SUPABASE CONFIG ---
+        // DON'T FORGET YOUR KEYS HERE!
         const SUPABASE_URL = 'https://oeffdzvomoxuxlleoizd.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lZmZkenZvbW94dXhsbGVvaXpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyMDI5NTIsImV4cCI6MjA5MTc3ODk1Mn0.gK37r_PikM1eElOo0YH2SezgyOPJQ22UFah_-6KgmQk';
+        
+        // FIX 1: Renamed connection to 'db'
         const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // --- STARFIELD ENGINE ---
@@ -108,7 +111,8 @@
         async function initPage() {
             if (postId) {
                 // MODE 1: READ SINGLE POST
-                const { data: post, error } = await supabase.from('posts').select('*').eq('id', postId).single();
+                // FIX 2: Changed to db.from
+                const { data: post, error } = await db.from('posts').select('*').eq('id', postId).single();
                 
                 if (error || !post) {
                     container.innerHTML = '<h1 style="color:red; text-align:center;">TRANSMISSION LOST</h1>';
@@ -129,7 +133,8 @@
                 `;
             } else {
                 // MODE 2: VIEW ALL POSTS FEED
-                const { data: projects, error } = await db.from('posts').select('*').order('created_at', { ascending: false });
+                // FIX 3: Changed to db.from
+                const { data: posts, error } = await db.from('posts').select('*').order('created_at', { ascending: false });
                 
                 if (error) {
                     container.innerHTML = '<h1 style="color:red; text-align:center;">SATELLITE ERROR</h1>';
