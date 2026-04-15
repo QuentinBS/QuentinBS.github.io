@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Details | Quentin Baynton</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root { --bg-color: #ffffff; --text-color: #1a1a1a; --accent-color: #2b6cb0; --gray: #f7fafc; }
+        body { font-family: -apple-system, sans-serif; line-height: 1.6; color: var(--text-color); margin: 0; padding: 0; }
+        header { padding: 2rem; text-align: center; border-bottom: 1px solid #e2e8f0; }
+        nav { margin-top: 1rem; } nav a { margin: 0 1rem; text-decoration: none; color: var(--text-color); font-weight: 500; }
+        nav a:hover { color: var(--accent-color); }
+        .container { max-width: 800px; margin: 2rem auto; padding: 2rem; background: var(--gray); border-radius: 8px; border: 1px solid #e2e8f0; }
+        .tag { display: inline-block; font-size: 0.9rem; background: var(--accent-color); color: white; padding: 0.3rem 0.8rem; border-radius: 3px; margin-bottom: 1rem; text-transform: capitalize; }
+        img { max-width: 100%; height: auto; border-radius: 5px; } /* Ensures images format nicely */
+        .back-link { display: inline-block; margin-bottom: 2rem; color: var(--accent-color); text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Quentin Baynton</h1>
+        <p>Future Aerospace Engineer</p>
+        <nav>
+            <a href="index.html">Portfolio</a>
+            <a href="blog.html">Blog</a>
+        </nav>
+    </header>
+
+    <div class="container" id="project-container">
+        <p>Loading project details...</p>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://oeffdzvomoxuxlleoizd.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lZmZkenZvbW94dXhsbGVvaXpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyMDI5NTIsImV4cCI6MjA5MTc3ODk1Mn0.gK37r_PikM1eElOo0YH2SezgyOPJQ22UFah_-6KgmQk';
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // This grabs the specific project ID from the web address (e.g., project.html?id=123)
+        const urlParams = new URLSearchParams(window.location.search);
+        const projectId = urlParams.get('id');
+
+        async function fetchProject() {
+            if (!projectId) {
+                document.getElementById('project-container').innerHTML = '<p>Project not found.</p>';
+                return;
+            }
+
+            const { data: project, error } = await supabase
+                .from('projects')
+                .select('*')
+                .eq('id', projectId)
+                .single();
+
+            if (error || !project) {
+                document.getElementById('project-container').innerHTML = '<p>Error loading project.</p>';
+                return;
+            }
+
+            document.getElementById('project-container').innerHTML = `
+                <a href="index.html" class="back-link">← Back to Portfolio</a>
+                <br>
+                <span class="tag">${project.category}</span>
+                <h2>${project.title}</h2>
+                <div class="content">${project.content}</div>
+            `;
+        }
+
+        fetchProject();
+    </script>
+</body>
+</html>
