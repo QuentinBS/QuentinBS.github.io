@@ -3,71 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog | Quentin Baynton</title>
-    <!-- Same CSS styles as index.html -->
-    <style>
-        :root { --bg-color: #ffffff; --text-color: #1a1a1a; --accent-color: #2b6cb0; --gray: #f7fafc; }
-        body { font-family: -apple-system, sans-serif; line-height: 1.6; color: var(--text-color); margin: 0; }
-        header { padding: 2rem; text-align: center; border-bottom: 1px solid #e2e8f0; }
-        nav { margin-top: 1rem; } nav a { margin: 0 1rem; text-decoration: none; color: var(--text-color); font-weight: 500; }
-        nav a:hover { color: var(--accent-color); }
-        .container { max-width: 800px; margin: 0 auto; padding: 2rem; }
-        .post { background: var(--gray); border-radius: 8px; padding: 2rem; margin-bottom: 2rem; border: 1px solid #e2e8f0; }
-        .post-date { font-size: 0.9rem; color: #718096; }
-    </style>
-    <!-- Supabase CDN -->
+    <title>Comm Link | Mission Control</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@500;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        /* Exact same variables to ensure seamless transition */
+        :root {
+            --space-dark: #050810; --space-light: #0a1122;
+            --surface: rgba(16, 24, 46, 0.7); --surface-hover: rgba(26, 38, 70, 0.9);
+            --cyan-glow: #00f0ff; --orange-thruster: #ff4d00;
+            --text-main: #e2e8f0; --text-muted: #8b9bb4;
+            --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+            --glass-blur: blur(12px);
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--font-body); background-color: var(--space-dark); color: var(--text-main); line-height: 1.8; overflow-x: hidden; }
+        #starfield { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
+
+        /* Nav */
+        nav { position: fixed; top: 0; width: 100%; background: rgba(5, 8, 16, 0.6); backdrop-filter: var(--glass-blur); border-bottom: var(--glass-border); z-index: 1000; padding: 1.2rem 0; }
+        .nav-container { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+        .logo { font-family: var(--font-display); font-size: 1.5rem; font-weight: 900; color: #ffffff; text-decoration: none; }
+        .logo span { color: var(--cyan-glow); }
+        .nav-links a { font-family: var(--font-mono); font-size: 0.9rem; color: var(--text-main); text-decoration: none; margin-left: 2rem; text-transform: uppercase; transition: 0.3s; }
+        .nav-links a:hover { color: var(--cyan-glow); }
+
+        .container { max-width: 1000px; margin: 120px auto 4rem; padding: 0 2rem; }
+        .header-title { font-family: var(--font-display); font-size: 3.5rem; text-align: center; margin-bottom: 3rem; text-transform: uppercase; letter-spacing: 2px; }
+        
+        /* Grid for multiple posts */
+        .blog-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+        
+        /* Blog Card (Feed Mode) */
+        .blog-card {
+            background: var(--surface); border: var(--glass-border); border-radius: 12px;
+            padding: 2rem; backdrop-filter: var(--glass-blur); text-decoration: none; color: inherit;
+            display: flex; flex-direction: column; transition: all 0.3s; position: relative;
+            border-left: 3px solid transparent;
+        }
+        .blog-card:hover { transform: translateX(10px); border-left: 3px solid var(--cyan-glow); background: var(--surface-hover); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .blog-meta { font-family: var(--font-mono); font-size: 0.85rem; color: var(--cyan-glow); margin-bottom: 0.5rem; text-transform: uppercase; }
+        .blog-card h2 { font-family: var(--font-display); font-size: 1.8rem; color: #fff; margin-bottom: 1rem; }
+        .read-more { margin-top: 1rem; font-family: var(--font-mono); color: var(--orange-thruster); font-size: 0.9rem; }
+
+        /* Single Post Reading Mode */
+        .single-post-container { max-width: 800px; margin: 0 auto; }
+        .post-header { text-align: center; margin-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 2rem; }
+        .post-header h1 { font-family: var(--font-display); font-size: 3rem; color: #fff; margin: 1rem 0; line-height: 1.2; }
+        .post-content { background: var(--surface); padding: 3rem; border-radius: 12px; border: var(--glass-border); backdrop-filter: var(--glass-blur); font-size: 1.1rem; }
+        .post-content img { max-width: 100%; border-radius: 8px; margin: 2rem 0; }
+        .back-link { display: inline-block; margin-bottom: 2rem; font-family: var(--font-mono); color: var(--cyan-glow); text-decoration: none; text-transform: uppercase; }
+        .back-link:hover { text-shadow: 0 0 10px rgba(0, 240, 255, 0.5); }
+
+    </style>
 </head>
 <body>
 
-    <header>
-        <h1>Quentin Baynton</h1>
-        <p>Future Aerospace Engineer</p>
-        <nav>
-            <a href="index.html">Portfolio</a>
-            <a href="blog.html">Blog</a>
-        </nav>
-    </header>
+    <canvas id="starfield"></canvas>
 
-    <div class="container" id="blog-container">
-        <p>Loading posts...</p>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo"><span>QB</span> Aerospace</a>
+            <div class="nav-links">
+                <a href="index.html">← Return to Base</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" id="dynamic-container">
+        <!-- JS will inject either the Feed or the Single Post here -->
+        <h1 class="header-title" style="color: var(--cyan-glow); animation: pulse 1.5s infinite;">ESTABLISHING COMM LINK...</h1>
     </div>
 
     <script>
-        // REPLACE THESE WITH YOUR SUPABASE CREDENTIALS
-        const SUPABASE_URL = 'https://oeffdzvomoxuxlleoizd.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lZmZkenZvbW94dXhsbGVvaXpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyMDI5NTIsImV4cCI6MjA5MTc3ODk1Mn0.gK37r_PikM1eElOo0YH2SezgyOPJQ22UFah_-6KgmQk';
-        
+        // --- SUPABASE CONFIG ---
+        const SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        async function fetchPosts() {
-            const { data: posts, error } = await supabase
-                .from('posts')
-                .select('*')
-                .order('created_at', { ascending: false });
+        // --- STARFIELD ENGINE ---
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+        let width, height, stars = [];
+        function resize() { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; }
+        class Star {
+            constructor() { this.x = Math.random() * width; this.y = Math.random() * height; this.z = Math.random() * width; this.size = Math.random() * 1.5; this.speed = (Math.random() * 0.5) + 0.1; }
+            update() { this.y -= this.speed; if (this.y < 0) { this.y = height; this.x = Math.random() * width; } }
+            draw() { ctx.fillStyle = `rgba(255, 255, 255, ${1 - this.z/width})`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
+        }
+        function initStars() { stars = []; for (let i = 0; i < 200; i++) stars.push(new Star()); }
+        function animateStars() { ctx.clearRect(0, 0, width, height); stars.forEach(star => { star.update(); star.draw(); }); requestAnimationFrame(animateStars); }
+        window.addEventListener('resize', () => { resize(); initStars(); }); resize(); initStars(); animateStars();
 
-            const container = document.getElementById('blog-container');
-            
-            if (error) {
-                container.innerHTML = '<p>Error loading posts.</p>';
-                return;
-            }
-            
-            if (posts.length === 0) {
-                container.innerHTML = '<p>No blog posts yet. Check back later!</p>';
-                return;
-            }
+        // --- DUAL-MODE ROUTER ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const postId = urlParams.get('id');
+        const container = document.getElementById('dynamic-container');
 
-            container.innerHTML = posts.map(post => `
-                <div class="post">
-                    <h2>${post.title}</h2>
-                    <p class="post-date">${new Date(post.created_at).toLocaleDateString()}</p>
-                    <div class="post-content">${post.content}</div>
-                </div>
-            `).join('');
+        async function initPage() {
+            if (postId) {
+                // MODE 1: READ SINGLE POST
+                const { data: post, error } = await supabase.from('posts').select('*').eq('id', postId).single();
+                
+                if (error || !post) {
+                    container.innerHTML = '<h1 style="color:red; text-align:center;">TRANSMISSION LOST</h1>';
+                    return;
+                }
+
+                const dateStr = new Date(post.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                
+                container.innerHTML = `
+                    <div class="single-post-container">
+                        <a href="blog.html" class="back-link">← Back to Comm Feed</a>
+                        <div class="post-header">
+                            <div class="blog-meta">TRANSMITTED: ${dateStr}</div>
+                            <h1>${post.title}</h1>
+                        </div>
+                        <div class="post-content">${post.content}</div>
+                    </div>
+                `;
+            } else {
+                // MODE 2: VIEW ALL POSTS FEED
+                const { data: posts, error } = await supabase.from('posts').select('*').order('created_at', { ascending: false });
+                
+                if (error) {
+                    container.innerHTML = '<h1 style="color:red; text-align:center;">SATELLITE ERROR</h1>';
+                    return;
+                }
+
+                if (posts.length === 0) {
+                    container.innerHTML = `
+                        <h1 class="header-title">Comm Link</h1>
+                        <p style="text-align:center; color: var(--text-muted);">No transmissions found in the database.</p>
+                    `;
+                    return;
+                }
+
+                const feedHTML = posts.map(p => {
+                    const dateStr = new Date(p.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                    // Extract just a tiny snippet of text to preview
+                    const snippet = p.content.replace(/<[^>]*>?/gm, '').substring(0, 150) + '...';
+                    
+                    return `
+                        <a href="blog.html?id=${p.id}" class="blog-card">
+                            <span class="blog-meta">${dateStr} // LOG_ID: ${p.id.substring(0,6).toUpperCase()}</span>
+                            <h2>${p.title}</h2>
+                            <p style="color: var(--text-muted);">${snippet}</p>
+                            <span class="read-more">DECRYPT FULL LOG →</span>
+                        </a>
+                    `;
+                }).join('');
+
+                container.innerHTML = `
+                    <h1 class="header-title">Comm Link</h1>
+                    <div class="blog-grid">${feedHTML}</div>
+                `;
+            }
         }
 
-        fetchPosts();
+        // Simulate network handshake before loading data
+        setTimeout(initPage, 800);
     </script>
 </body>
 </html>
