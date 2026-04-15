@@ -3,275 +3,1178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quentin Baynton | Aerospace Engineering Portfolio</title>
-    <!-- Modern Tech Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    <!-- Supabase CDN -->
+    <title>Quentin Baynton | Mission Control & Portfolio</title>
+    <!-- Modern Tech Fonts: Space Grotesk for headers, JetBrains Mono for code/tech vibes, Inter for reading -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Supabase Core -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
-        :root { 
-            --bg-color: #f8fafc; 
-            --card-bg: #ffffff;
-            --text-main: #0f172a; 
-            --text-muted: #64748b;
-            --accent: #0284c7; /* Aerospace Blue */
-            --accent-hover: #0369a1;
-            --glow: rgba(2, 132, 199, 0.15);
-        }
-        
-        * { box-sizing: border-box; }
-        
-        body { 
-            font-family: 'Inter', sans-serif; 
-            line-height: 1.6; 
-            color: var(--text-main); 
-            background-color: var(--bg-color); 
-            margin: 0; 
-            padding: 0; 
+        /* ==========================================================================
+           1. CSS VARIABLES & THEME SETUP
+           ========================================================================== */
+        :root {
+            /* Deep Space Color Palette */
+            --space-dark: #050810;
+            --space-light: #0a1122;
+            --surface: rgba(16, 24, 46, 0.7);
+            --surface-hover: rgba(26, 38, 70, 0.9);
+            
+            /* Accent Colors */
+            --cyan-glow: #00f0ff;
+            --orange-thruster: #ff4d00;
+            --text-main: #e2e8f0;
+            --text-muted: #8b9bb4;
+            
+            /* Glassmorphism Variables */
+            --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+            --glass-blur: blur(12px);
+            
+            /* Typography */
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            
+            /* Transitions */
+            --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        h1, h2, h3, h4, nav a { 
-            font-family: 'Space Grotesk', sans-serif; 
+        /* ==========================================================================
+           2. GLOBAL RESET & BASE STYLES
+           ========================================================================== */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-        /* Sleek Navigation */
-        nav { 
-            display: flex; 
-            justify-content: center; 
-            padding: 1.5rem; 
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
-            position: sticky; 
-            top: 0; 
-            z-index: 100;
-            border-bottom: 1px solid #e2e8f0;
+        html {
+            scroll-behavior: smooth;
         }
-        
-        nav a { 
-            margin: 0 1.5rem; 
-            text-decoration: none; 
-            color: var(--text-main); 
-            font-weight: 700; 
-            font-size: 1.1rem;
-            transition: color 0.3s ease; 
-        }
-        
-        nav a:hover { color: var(--accent); }
 
-        /* Modern Hero Section */
-        .hero { 
-            text-align: center; 
-            padding: 6rem 1rem 4rem; 
-            animation: fadeIn 1s ease-out;
+        body {
+            font-family: var(--font-body);
+            background-color: var(--space-dark);
+            color: var(--text-main);
+            line-height: 1.7;
+            overflow-x: hidden;
+            position: relative;
         }
-        
-        .hero h1 { 
-            font-size: 3.5rem; 
-            margin: 0 0 0.5rem 0; 
-            letter-spacing: -1px;
-            color: #0f172a;
+
+        /* Custom Scrollbar for a tech feel */
+        ::-webkit-scrollbar {
+            width: 10px;
         }
-        
-        .hero .subtitle { 
-            font-size: 1.2rem; 
-            color: var(--accent); 
-            font-weight: 700; 
-            text-transform: uppercase; 
+        ::-webkit-scrollbar-track {
+            background: var(--space-dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--surface-hover);
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--cyan-glow);
+        }
+
+        /* Canvas Background */
+        #starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Typography Global */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-display);
+            color: #ffffff;
+            margin-bottom: 1rem;
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--cyan-glow);
+            transition: var(--transition-smooth);
+        }
+
+        /* Container System */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+            text-transform: uppercase;
             letter-spacing: 2px;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: var(--cyan-glow);
+            box-shadow: 0 0 10px var(--cyan-glow);
+        }
+
+        section {
+            padding: 8rem 0;
+        }
+
+        /* ==========================================================================
+           3. NAVIGATION BAR (Glassmorphism)
+           ========================================================================== */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(5, 8, 16, 0.6);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-bottom: var(--glass-border);
+            z-index: 1000;
+            padding: 1.2rem 0;
+            transition: var(--transition-smooth);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--cyan-glow);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+        }
+
+        .nav-links a::before {
+            content: '>';
+            color: var(--cyan-glow);
+            margin-right: 5px;
+            opacity: 0;
+            transition: var(--transition-smooth);
+        }
+
+        .nav-links a:hover::before {
+            opacity: 1;
+        }
+
+        .nav-links a:hover {
+            color: var(--cyan-glow);
+            text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+        }
+
+        /* ==========================================================================
+           4. HERO SECTION (Landing)
+           ========================================================================== */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            padding-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            z-index: 10;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 0.5rem 1.2rem;
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            border-radius: 50px;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--cyan-glow);
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
+        }
+
+        .hero h1 {
+            font-size: 5rem;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -2px;
+            background: linear-gradient(135deg, #ffffff 0%, #8b9bb4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .typewriter-container {
+            height: 40px;
             margin-bottom: 2rem;
         }
-        
-        .hero p { 
-            max-width: 600px; 
-            margin: 0 auto; 
-            color: var(--text-muted); 
-            font-size: 1.1rem; 
+
+        .typewriter-text {
+            font-family: var(--font-mono);
+            font-size: 1.5rem;
+            color: var(--text-muted);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.5rem;
+            background-color: var(--orange-thruster);
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+            margin-left: 5px;
         }
 
-        .container { 
-            max-width: 1100px; 
-            margin: 0 auto; 
-            padding: 2rem 1.5rem; 
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
         }
 
-        /* Stylish Filters */
-        .filters { 
-            text-align: center; 
-            margin-bottom: 3rem; 
-        }
-        
-        .filter-btn { 
-            background-color: transparent; 
-            border: 1px solid #cbd5e1; 
-            color: var(--text-muted); 
-            padding: 0.6rem 1.2rem; 
-            margin: 0.3rem; 
-            cursor: pointer; 
-            border-radius: 50px; /* Pill shape */
-            font-family: 'Inter', sans-serif;
-            font-weight: 500; 
-            transition: all 0.3s ease; 
-        }
-        
-        .filter-btn:hover, .filter-btn.active { 
-            background-color: var(--text-main); 
-            color: white; 
-            border-color: var(--text-main);
-            box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2);
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-top: 3rem;
         }
 
-        /* Floating Project Cards */
-        .grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
-            gap: 2rem; 
-        }
-        
-        .card { 
-            background: var(--card-bg); 
-            border-radius: 12px; 
-            padding: 2rem; 
-            border: 1px solid #e2e8f0; 
-            cursor: pointer; 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            text-decoration: none; 
-            color: var(--text-main); 
-            display: block; 
-            position: relative;
-            top: 0;
-        }
-        
-        .card:hover { 
-            top: -8px; /* Floats up */
-            border-color: var(--accent);
-            box-shadow: 0 20px 25px -5px var(--glow), 0 10px 10px -5px var(--glow); 
-        }
-        
-        .tag { 
-            font-size: 0.75rem; 
-            font-family: 'Space Grotesk', sans-serif;
-            background: var(--bg-color); 
-            color: var(--accent); 
-            border: 1px solid var(--accent);
-            padding: 0.3rem 0.8rem; 
-            border-radius: 50px; 
-            text-transform: uppercase; 
+        .btn-primary {
+            background: var(--cyan-glow);
+            color: #000;
+            padding: 1rem 2.5rem;
+            border-radius: 4px;
+            font-family: var(--font-display);
             font-weight: 700;
+            font-size: 1.1rem;
+            text-transform: uppercase;
             letter-spacing: 1px;
+            transition: var(--transition-smooth);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+            position: relative;
+            overflow: hidden;
         }
-        
-        .card h3 { margin: 1.5rem 0 0.5rem 0; font-size: 1.4rem; }
-        .card p { margin: 0; color: var(--text-muted); font-size: 0.95rem; }
 
-        /* Tech Footer */
-        .contact { 
-            background: #0f172a; /* Deep space blue */
-            color: white;
-            padding: 5rem 2rem; 
-            text-align: center; 
-            margin-top: 5rem; 
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.6);
+            background: #fff;
         }
-        
-        .contact h2 { font-size: 2.5rem; margin-top: 0; }
-        .contact p { color: #94a3b8; font-size: 1.1rem; margin-bottom: 2rem; }
-        
-        .contact a.btn { 
-            display: inline-block; 
-            background-color: var(--accent); 
-            color: white; 
-            padding: 1rem 2rem; 
-            text-decoration: none; 
-            border-radius: 8px; 
-            margin: 0.5rem; 
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-main);
+            padding: 1rem 2.5rem;
+            border-radius: 4px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: var(--transition-smooth);
+            border: 1px solid var(--text-muted);
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--cyan-glow);
+            color: var(--cyan-glow);
+            background: rgba(0, 240, 255, 0.05);
+        }
+
+        /* ==========================================================================
+           5. ABOUT & TIMELINE SECTION
+           ========================================================================== */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .about-text p {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-muted);
+        }
+
+        .highlight {
+            color: var(--cyan-glow);
             font-weight: 600;
-            transition: background 0.2s;
-        }
-        
-        .contact a.btn.outline {
-            background-color: transparent;
-            border: 2px solid var(--accent);
         }
 
-        .contact a.btn:hover { background-color: var(--accent-hover); }
-        .contact a.btn.outline:hover { background-color: rgba(2, 132, 199, 0.1); }
+        /* Cyberpunk/Aerospace Image Box */
+        .image-container {
+            position: relative;
+            padding: 1rem;
+        }
+
+        .image-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--orange-thruster);
+            transform: translate(-15px, -15px);
+            z-index: -1;
+            transition: var(--transition-smooth);
+        }
+
+        .image-container::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--cyan-glow);
+            transform: translate(15px, 15px);
+            z-index: -1;
+            transition: var(--transition-smooth);
+        }
+
+        .image-container:hover::before { transform: translate(-5px, -5px); }
+        .image-container:hover::after { transform: translate(5px, 5px); }
+
+        .about-img-placeholder {
+            background: var(--surface);
+            border: var(--glass-border);
+            width: 100%;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            color: var(--text-muted);
+            backdrop-filter: var(--glass-blur);
+        }
+
+        /* Timeline */
+        .timeline {
+            margin-top: 4rem;
+            position: relative;
+            padding-left: 2rem;
+            border-left: 2px solid rgba(0, 240, 255, 0.2);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2.5rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -35px;
+            top: 5px;
+            width: 16px;
+            height: 16px;
+            background: var(--space-dark);
+            border: 2px solid var(--cyan-glow);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+            transition: var(--transition-smooth);
+        }
+
+        .timeline-item:hover::before {
+            background: var(--cyan-glow);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.8);
+        }
+
+        .timeline-date {
+            font-family: var(--font-mono);
+            color: var(--orange-thruster);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-title {
+            font-size: 1.3rem;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        /* ==========================================================================
+           6. SKILLS & MISSION PARAMETERS
+           ========================================================================== */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .skill-card {
+            background: var(--surface);
+            border: var(--glass-border);
+            padding: 2rem;
+            border-radius: 8px;
+            backdrop-filter: var(--glass-blur);
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skill-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--cyan-glow);
+            transform: scaleY(0);
+            transition: var(--transition-smooth);
+            transform-origin: bottom;
+        }
+
+        .skill-card:hover {
+            transform: translateY(-5px);
+            background: var(--surface-hover);
+        }
+
+        .skill-card:hover::before {
+            transform: scaleY(1);
+        }
+
+        .skill-icon {
+            font-size: 2.5rem;
+            color: var(--cyan-glow);
+            margin-bottom: 1rem;
+        }
+
+        .skill-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .skill-bar-bg {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .skill-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--cyan-glow), var(--orange-thruster));
+            border-radius: 3px;
+            transform-origin: left;
+            transform: scaleX(0);
+            transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ==========================================================================
+           7. PROJECTS DATABASE (Supabase Integration + 3D Cards)
+           ========================================================================== */
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-muted);
+            padding: 0.6rem 1.5rem;
+            border-radius: 30px;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: rgba(0, 240, 255, 0.1);
+            border-color: var(--cyan-glow);
+            color: var(--cyan-glow);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+        }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2.5rem;
+            perspective: 1000px; /* Required for 3D tilt effect */
+        }
+
+        /* 3D Tilt Card Base */
+        .project-card {
+            background: var(--surface);
+            border: var(--glass-border);
+            border-radius: 12px;
+            padding: 2rem;
+            text-decoration: none;
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.1s; /* Fast transition for smooth JS tracking */
+            backdrop-filter: var(--glass-blur);
+            position: relative;
+        }
+
+        .project-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 12px;
+            box-shadow: 0 0 0 rgba(0, 240, 255, 0);
+            transition: var(--transition-smooth);
+            pointer-events: none;
+        }
+
+        .project-card:hover::after {
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.15) inset, 0 0 20px rgba(0, 240, 255, 0.2);
+            border: 1px solid rgba(0, 240, 255, 0.5);
+        }
+
+        /* Content inside card translates forward in Z-space for 3D popup effect */
+        .project-card > * {
+            transform: translateZ(30px);
+        }
+
+        .project-tag {
+            align-self: flex-start;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            background: rgba(255, 77, 0, 0.1);
+            color: var(--orange-thruster);
+            border: 1px solid rgba(255, 77, 0, 0.3);
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        .project-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .project-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            flex-grow: 1;
+            margin-bottom: 1.5rem;
+        }
+
+        .project-link-text {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--cyan-glow);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Skeleton Loading Animation */
+        .skeleton {
+            background: var(--surface);
+            border: var(--glass-border);
+            border-radius: 12px;
+            padding: 2rem;
+            height: 250px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skeleton::after {
+            content: "";
+            position: absolute;
+            top: 0; right: 0; bottom: 0; left: 0;
+            transform: translateX(-100%);
+            background-image: linear-gradient(90deg, 
+                rgba(255, 255, 255, 0) 0, 
+                rgba(255, 255, 255, 0.05) 20%, 
+                rgba(255, 255, 255, 0.1) 60%, 
+                rgba(255, 255, 255, 0)
+            );
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            100% { transform: translateX(100%); }
+        }
+
+        /* ==========================================================================
+           8. CONTACT & FOOTER
+           ========================================================================== */
+        .contact-section {
+            background: linear-gradient(180deg, transparent, rgba(10, 17, 34, 0.9));
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 6rem 0 4rem;
+            text-align: center;
+        }
+
+        .contact-box {
+            background: var(--surface);
+            backdrop-filter: var(--glass-blur);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 16px;
+            padding: 4rem 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Decorative Corners for Contact Box */
+        .contact-box::before, .contact-box::after {
+            content: ''; position: absolute; width: 20px; height: 20px; border: 2px solid var(--cyan-glow);
+        }
+        .contact-box::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+        .contact-box::after { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 3rem 0;
+            flex-wrap: wrap;
+        }
+
+        .contact-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .contact-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(0, 240, 255, 0.05);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--cyan-glow);
+            transition: var(--transition-smooth);
+        }
+
+        .contact-item:hover .contact-icon {
+            background: var(--cyan-glow);
+            color: #000;
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* ==========================================================================
+           9. UTILITY ANIMATIONS (Scroll Reveals)
+           ========================================================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* SVGs styling */
+        svg { width: 24px; height: 24px; fill: currentColor; }
+        .skill-icon svg { width: 40px; height: 40px; }
+
+        /* ==========================================================================
+           10. RESPONSIVE DESIGN
+           ========================================================================== */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 3rem; }
+            .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+            .nav-links { display: none; /* Add a hamburger menu here later if needed */ }
+            .hero-buttons { flex-direction: column; }
+            .contact-info { flex-direction: column; gap: 3rem; }
+        }
     </style>
 </head>
 <body>
 
+    <!-- 
+      Canvas Element for the Interactive Starfield.
+      The JavaScript below will draw thousands of moving particles on this canvas.
+    -->
+    <canvas id="starfield"></canvas>
+
+    <!-- Navigation -->
     <nav>
-        <a href="index.html">Portfolio</a>
-        <a href="blog.html">Blog</a>
+        <div class="nav-container">
+            <div class="logo">
+                <span>QB</span> Aerospace
+            </div>
+            <div class="nav-links">
+                <a href="#about">Mission Log</a>
+                <a href="#skills">Systems</a>
+                <a href="#projects">Database</a>
+                <a href="blog.html">Comm Link</a>
+                <a href="#contact">Transmit</a>
+            </div>
+        </div>
     </nav>
 
-    <div class="hero">
-        <h1>Quentin Baynton</h1>
-        <div class="subtitle">Future Aerospace Engineer</div>
-        <p>I am an 11th-grade student from Paris, Ontario, with a deep passion for engineering, mathematics, and space. My ultimate goal is to become an astronaut.</p>
-    </div>
+    <!-- Hero / Landing Section -->
+    <header class="hero">
+        <div class="container hero-content">
+            <div class="reveal">
+                <div class="hero-badge">System Status: Nominal</div>
+                <h1>Quentin Baynton</h1>
+                
+                <div class="typewriter-container">
+                    <span class="typewriter-text" id="typewriter"></span><span class="cursor"></span>
+                </div>
+                
+                <p style="color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
+                    11th-grade engineering student based in Paris, Ontario. Building the software and hardware required for humanity's next giant leap. Next stop: Orbit.
+                </p>
 
-    <div class="container">
-        <div class="filters">
-            <button class="filter-btn active" onclick="filterProjects('all')">View All</button>
-            <button class="filter-btn" onclick="filterProjects('aerospace')">Aerospace</button>
-            <button class="filter-btn" onclick="filterProjects('coding')">Software</button>
+                <div class="hero-buttons">
+                    <button class="btn-primary" onclick="document.getElementById('projects').scrollIntoView();">View Database</button>
+                    <a href="resume.pdf" target="_blank" class="btn-secondary">Download Manifest (CV)</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- About / Mission Log Section -->
+    <section id="about" class="container">
+        <h2 class="section-title reveal">Mission Log</h2>
+        
+        <div class="about-grid">
+            <div class="reveal">
+                <div class="image-container">
+                    <!-- Placeholder for your actual photo. Replace the div with an <img> tag later -->
+                    <div class="about-img-placeholder">
+                        [ INSERT PILOT_IMAGE.JPG ]
+                    </div>
+                </div>
+            </div>
+            
+            <div class="about-text reveal">
+                <h3 style="font-size: 2rem; color: var(--cyan-glow);">T-Minus to Launch.</h3>
+                <p>Hello. I'm Quentin. I've always looked up at the night sky and known exactly where I belong. My long-term trajectory is set: <span class="highlight">I am working to become an astronaut.</span></p>
+                <p>To get there, I am immersing myself in both the theoretical (math and physics) and the practical (software development and mechanical engineering). I believe modern aerospace engineering requires a deep understanding of full-stack systems.</p>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-date">CURRENT</div>
+                        <div class="timeline-title">11th Grade Studies</div>
+                        <p style="font-size: 0.9rem; color: var(--text-muted);">Focusing heavily on advanced mathematics, physics, and independent computer science projects in Paris, Ontario.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">PROJECT ALFA</div>
+                        <div class="timeline-title">Water Rocket Simulations</div>
+                        <p style="font-size: 0.9rem; color: var(--text-muted);">Calculated thrust-to-weight ratios and aerodynamic drag to optimize amateur rocketry launches.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">SOFTWARE</div>
+                        <div class="timeline-title">Full-Stack Development</div>
+                        <p style="font-size: 0.9rem; color: var(--text-muted);">Mastering HTML, CSS, JavaScript, and database management (Supabase) to build complex web applications.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="container">
+        <h2 class="section-title reveal">Core Systems</h2>
+        
+        <div class="skills-grid">
+            <!-- Skill 1 -->
+            <div class="skill-card reveal">
+                <div class="skill-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+                </div>
+                <h3 class="skill-title">Frontend Engineering</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">HTML5, Advanced CSS3, Vanilla JavaScript, Responsive Design.</p>
+                <div class="skill-bar-bg"><div class="skill-bar-fill fill-anim" data-width="85%"></div></div>
+            </div>
+
+            <!-- Skill 2 -->
+            <div class="skill-card reveal" style="transition-delay: 0.1s;">
+                <div class="skill-icon">
+                    <svg viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(45 12 12)" stroke="currentColor" stroke-width="2" fill="none"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-45 12 12)" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>
+                </div>
+                <h3 class="skill-title">Orbital Mechanics</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Physics fundamentals, trajectory calculation, kinematics.</p>
+                <div class="skill-bar-bg"><div class="skill-bar-fill fill-anim" data-width="70%"></div></div>
+            </div>
+
+            <!-- Skill 3 -->
+            <div class="skill-card reveal" style="transition-delay: 0.2s;">
+                <div class="skill-icon">
+                    <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" stroke-width="2" fill="none"/><path d="M22 6l-10 7L2 6" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+                </div>
+                <h3 class="skill-title">Backend & Data</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Supabase configuration, SQL databases, API integration.</p>
+                <div class="skill-bar-bg"><div class="skill-bar-fill fill-anim" data-width="60%"></div></div>
+            </div>
+            
+            <!-- Skill 4 -->
+            <div class="skill-card reveal" style="transition-delay: 0.3s;">
+                <div class="skill-icon">
+                    <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+                </div>
+                <h3 class="skill-title">Practical Engineering</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Hardware assembly, amateur rocketry testing, telemetry.</p>
+                <div class="skill-bar-bg"><div class="skill-bar-fill fill-anim" data-width="75%"></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Supabase Projects Database -->
+    <section id="projects" class="container">
+        <h2 class="section-title reveal">Project Database</h2>
+        
+        <div class="filters reveal">
+            <button class="filter-btn active" onclick="filterProjects('all')">All Datasets</button>
+            <button class="filter-btn" onclick="filterProjects('aerospace')">Aerospace Engineering</button>
+            <button class="filter-btn" onclick="filterProjects('coding')">Software Dev</button>
             <button class="filter-btn" onclick="filterProjects('math')">Math & Physics</button>
         </div>
 
-        <div class="grid" id="project-grid">
-            <p style="text-align: center; width: 100%; color: var(--text-muted);">Initializing database connection...</p>
+        <div class="project-grid" id="project-grid">
+            <!-- Loading Skeletons show up before Supabase data loads -->
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
         </div>
-    </div>
+    </section>
 
-    <div class="contact">
-        <h2>Ready for Liftoff?</h2>
-        <p>Let's connect. Feel free to reach out via email or phone.</p>
-        <div style="margin-bottom: 2rem; color: #cbd5e1;">📱 226-208-1297</div>
-        <a href="mailto:Quentin.BayntonS@hotmail.com" class="btn">Email Me</a>
-        <a href="resume.pdf" target="_blank" class="btn outline">View Resume</a>
-    </div>
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <div class="container reveal">
+            <div class="contact-box">
+                <h2 style="font-size: 2.5rem; color: #fff; margin-bottom: 1rem;">Establish Comm Link</h2>
+                <p style="color: var(--text-muted); font-size: 1.1rem; max-width: 500px; margin: 0 auto;">
+                    Whether it's discussing orbital mechanics, reviewing my code, or talking about future opportunities in aerospace, my comm channels are open.
+                </p>
+                
+                <div class="contact-info">
+                    <a href="mailto:Quentin.BayntonS@hotmail.com" class="contact-item">
+                        <div class="contact-icon">
+                            <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" stroke-width="2" fill="none"/><path d="M22 6l-10 7L2 6" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+                        </div>
+                        <span style="font-family: var(--font-mono); color: #fff;">Quentin.BayntonS@hotmail.com</span>
+                    </a>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+                        </div>
+                        <span style="font-family: var(--font-mono); color: #fff;">226-208-1297</span>
+                    </div>
+                </div>
 
+                <a href="resume.pdf" target="_blank" class="btn-primary" style="margin-top: 1rem; display: inline-block;">Access Full Record (PDF)</a>
+            </div>
+
+            <div class="footer">
+                <p>Designed & Engineered by Quentin Baynton. Hosted on GitHub Pages. Database powered by Supabase.</p>
+                <p>Status: All systems operational. Coordinates: Paris, Ontario.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+         JAVASCRIPT ENGINE: Animations, Interactivity, and Database Fetching
+         ========================================================================== -->
     <script>
+        /**
+         * 1. CONFIGURATION (SUPABASE)
+         * Add your actual URL and Key here.
+         */
         const SUPABASE_URL = 'https://oeffdzvomoxuxlleoizd.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lZmZkenZvbW94dXhsbGVvaXpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyMDI5NTIsImV4cCI6MjA5MTc3ODk1Mn0.gK37r_PikM1eElOo0YH2SezgyOPJQ22UFah_-6KgmQk';
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        async function loadProjects() {
-            const { data: projects, error } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
-            
-            const grid = document.getElementById('project-grid');
-            if (error) { grid.innerHTML = '<p>System Error: Unable to load project database.</p>'; return; }
-            if (projects.length === 0) { grid.innerHTML = '<p>No projects uploaded yet. Check back soon.</p>'; return; }
+        /**
+         * 2. INTERACTIVE CANVAS STARFIELD (Aerospace Vibe)
+         * This creates a dynamic, moving background of stars.
+         */
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let stars = [];
 
-            grid.innerHTML = projects.map(p => `
-                <a href="project.html?id=${p.id}" class="card project" data-category="${p.category.toLowerCase()}">
-                    <span class="tag">${p.category}</span>
-                    <h3>${p.title}</h3>
-                    <p>${p.short_description}</p>
-                </a>
-            `).join('');
+        // Resize canvas to fill the screen
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
         }
 
+        // Star Object
+        class Star {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.z = Math.random() * width; // Depth for 3D effect
+                this.size = Math.random() * 1.5;
+                // Deeper stars move slower
+                this.speed = (Math.random() * 0.5) + 0.1; 
+            }
+            update() {
+                this.y -= this.speed; // Move up to simulate falling/flying forward
+                if (this.y < 0) {
+                    this.y = height;
+                    this.x = Math.random() * width;
+                }
+            }
+            draw() {
+                ctx.fillStyle = `rgba(255, 255, 255, ${1 - this.z/width})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initStars() {
+            stars = [];
+            // Create 300 stars for a dense field
+            for (let i = 0; i < 300; i++) {
+                stars.push(new Star());
+            }
+        }
+
+        function animateStars() {
+            ctx.clearRect(0, 0, width, height);
+            stars.forEach(star => {
+                star.update();
+                star.draw();
+            });
+            requestAnimationFrame(animateStars);
+        }
+
+        window.addEventListener('resize', () => { resize(); initStars(); });
+        resize();
+        initStars();
+        animateStars();
+
+        /**
+         * 3. TYPEWRITER EFFECT (Hero Section)
+         * Gives a cool "terminal typing" effect for the subtitle.
+         */
+        const phrases = ["Future Aerospace Engineer.", "Full-Stack Developer.", "Aspiring Astronaut.", "Rocket Science Enthusiast."];
+        let currentPhrase = 0;
+        let letterCount = 0;
+        let isDeleting = false;
+        const typewriterElement = document.getElementById("typewriter");
+
+        function type() {
+            const fullText = phrases[currentPhrase];
+            
+            if (isDeleting) {
+                typewriterElement.innerText = fullText.substring(0, letterCount - 1);
+                letterCount--;
+            } else {
+                typewriterElement.innerText = fullText.substring(0, letterCount + 1);
+                letterCount++;
+            }
+
+            let typeSpeed = 100;
+            if (isDeleting) typeSpeed /= 2; // Delete faster
+
+            // Logic to switch between typing and deleting
+            if (!isDeleting && letterCount === fullText.length) {
+                typeSpeed = 2000; // Pause at end of sentence
+                isDeleting = true;
+            } else if (isDeleting && letterCount === 0) {
+                isDeleting = false;
+                currentPhrase = (currentPhrase + 1) % phrases.length;
+                typeSpeed = 500; // Pause before new sentence
+            }
+
+            setTimeout(type, typeSpeed);
+        }
+        setTimeout(type, 1000); // Start effect after 1 second
+
+        /**
+         * 4. SCROLL REVEAL ANIMATIONS
+         * Uses IntersectionObserver to trigger CSS animations when elements appear on screen.
+         */
+        function reveal() {
+            const reveals = document.querySelectorAll(".reveal");
+            for (let i = 0; i < reveals.length; i++) {
+                const windowHeight = window.innerHeight;
+                const elementTop = reveals[i].getBoundingClientRect().top;
+                const elementVisible = 150;
+
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                    
+                    // Trigger skill bar animations if inside a skill card
+                    const skillBar = reveals[i].querySelector('.fill-anim');
+                    if(skillBar) {
+                        const width = skillBar.getAttribute('data-width');
+                        skillBar.style.transform = `scaleX(${parseInt(width)/100})`;
+                    }
+                }
+            }
+        }
+        window.addEventListener("scroll", reveal);
+        reveal(); // Trigger on load
+
+        /**
+         * 5. SUPABASE DATA FETCHING
+         * Pulls your projects from the database and renders them as 3D cards.
+         */
+        async function loadProjects() {
+            const { data: projects, error } = await supabase
+                .from('projects')
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            const grid = document.getElementById('project-grid');
+            
+            if (error) { 
+                grid.innerHTML = '<p style="color:red; grid-column: 1/-1;">System Error: Database connection failed.</p>'; 
+                return; 
+            }
+            if (projects.length === 0) { 
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center;">Database is currently empty. Awaiting payload.</p>'; 
+                return; 
+            }
+
+            grid.innerHTML = projects.map(p => `
+                <a href="project.html?id=${p.id}" class="project-card project-item" data-category="${p.category.toLowerCase()}">
+                    <span class="project-tag">${p.category}</span>
+                    <h3>${p.title}</h3>
+                    <p>${p.short_description}</p>
+                    <span class="project-link-text">Access Data Log →</span>
+                </a>
+            `).join('');
+
+            // After loading cards, attach the 3D tilt effect listeners
+            attachTiltEffect();
+        }
+
+        /**
+         * 6. PROJECT FILTERING
+         * Hides/Shows cards based on category.
+         */
         function filterProjects(category) {
+            // Update active button styling
             document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
 
-            const projects = document.querySelectorAll('.project');
+            // Filter logic
+            const projects = document.querySelectorAll('.project-item');
             projects.forEach(project => {
                 if (category === 'all' || project.getAttribute('data-category') === category) {
-                    project.style.display = 'block';
+                    project.style.display = 'flex'; // Use flex because cards are flex columns
+                    setTimeout(() => project.style.opacity = '1', 50);
                 } else {
-                    project.style.display = 'none';
+                    project.style.opacity = '0';
+                    setTimeout(() => project.style.display = 'none', 300);
                 }
             });
         }
 
+        /**
+         * 7. 3D CARD TILT EFFECT
+         * Math logic to track mouse position over a card and rotate the card on X/Y axes.
+         */
+        function attachTiltEffect() {
+            const cards = document.querySelectorAll('.project-card');
+            
+            cards.forEach(card => {
+                card.addEventListener('mousemove', e => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left; // x position within the element.
+                    const y = e.clientY - rect.top;  // y position within the element.
+                    
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    
+                    // Calculate rotation degrees (max 10 degrees)
+                    const rotateX = ((y - centerY) / centerY) * -10;
+                    const rotateY = ((x - centerX) / centerX) * 10;
+                    
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+                });
+
+                // Reset card when mouse leaves
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+                    card.style.transition = 'transform 0.5s ease'; // Add smooth snap back
+                });
+
+                card.addEventListener('mouseenter', () => {
+                    card.style.transition = 'transform 0.1s ease'; // Remove snap back for smooth tracking
+                });
+            });
+        }
+
+        // Initialize Data
         loadProjects();
+
     </script>
 </body>
 </html>
