@@ -129,7 +129,7 @@
                 `;
             } else {
                 // MODE 2: VIEW ALL POSTS FEED
-                const { data: posts, error } = await supabase.from('posts').select('*').order('created_at', { ascending: false });
+                const { data: projects, error } = await db.from('posts').select('*').order('created_at', { ascending: false });
                 
                 if (error) {
                     container.innerHTML = '<h1 style="color:red; text-align:center;">SATELLITE ERROR</h1>';
